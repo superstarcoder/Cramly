@@ -5,35 +5,33 @@ Abstract:
     Flask web server for Cramly's study tools. Serves the static frontend
     and exposes quiz generation and answer evaluation endpoints.
 
-    Two quiz generation modes:
-      • Notes mode  — reads processed notes from notes/processed/chunks.json
-                      and sources from notes/processed/sources.json.
-                      Activated by useNotes=true in the request.
-      • Search mode — the original web-search-based generation (fallback when
-                      useNotes is false or notes haven't been processed yet).
+    Two quiz generation modes, chosen automatically per request:
+      • Notes mode  — used whenever notes/processed/chunks.json has content.
+      • Search mode — fallback when no processed notes are available; runs the
+                      original web-search-based generation.
 
 Endpoints:
       GET  /api/quiz-stream      — Server-Sent Events stream of agent decisions.
       POST /api/generate-quiz    — Blocking fallback; same quiz but no streaming.
       POST /api/evaluate-answer  — Grade a short-answer response with GPT.
       GET  /api/notes-status     — Report whether processed notes are available.
-
-Integration point for groupmate (steps 4–6):
-    After running the ingest → chunk pipeline, save output to:
-        notes/processed/chunks.json   — [{"text": str, "source": str, ...}, ...]
-        notes/processed/sources.json  — [{"title": str, "type": str}, ...]
-    The /api/quiz-stream endpoint reads these files when useNotes=true.
+      POST /api/upload-notes     — Save uploaded raw note files.
 """
 
 import json
 import os
+from pathlib import Path
 
 from dotenv import load_dotenv
 from flask import Flask, Response, jsonify, request, send_from_directory, stream_with_context
 from flask_cors import CORS
+from werkzeug.utils import secure_filename
 
+from src.chunk import chunk_notes
 from src.generate_quiz import QuizGenerator
 from src.generate_study_guide import generate_study_guide
+from src.handwritten_ingest import process_handwritten_notes
+from src.ingest import ingest_notes
 from src.utils import load_all_note_chunks, chunks_to_sources, chunks_to_text
 
 load_dotenv()
@@ -86,12 +84,19 @@ def generate_study_guide_endpoint():
     grade_level          = data.get("grade_level", "").strip()
     major_or_class_level = data.get("major_or_class_level", "").strip()
     topic                = data.get("topic", "").strip()
-    notes                = data.get("notes", "") or ""
+    notes                = (data.get("notes", "") or "").strip()
 
     if not (grade_level and major_or_class_level and topic):
         return jsonify({
             "error": "grade_level, major_or_class_level, and topic are all required."
         }), 400
+
+    # If the user didn't paste notes, fall back to whatever's in the processed
+    # notes pipeline (digital + handwritten chunks).
+    if not notes:
+        chunks = load_all_note_chunks()
+        if chunks:
+            notes = chunks_to_text(chunks)
 
     try:
         markdown = generate_study_guide(grade_level, major_or_class_level, topic, notes)
@@ -110,27 +115,23 @@ def quiz_stream():
         topic        (str)  — subject to quiz on
         difficulty   (str)  — "Beginner" | "Intermediate" | "Advanced"
         numQuestions (int)  — 5, 10, or 15
-        useNotes     (bool) — "true" to generate from notes/processed/
+
+    Notes mode is selected automatically when processed notes are available;
+    otherwise the agent falls back to web search.
 
     Each SSE message is a JSON object; see src/generate_quiz.py for event shapes.
     """
     topic         = request.args.get("topic", "").strip()
     difficulty    = request.args.get("difficulty", "Intermediate")
     num_questions = int(request.args.get("numQuestions", 10))
-    use_notes     = request.args.get("useNotes", "false").lower() == "true"
 
     if not topic:
         return _sse_error("Topic is required.")
 
     notes_text = None
     sources    = None
-    if use_notes:
-        chunks = load_all_note_chunks()
-        if not chunks:
-            return _sse_error(
-                "No processed notes found. "
-                "Run the notes pipeline first, then try again."
-            )
+    chunks = load_all_note_chunks()
+    if chunks:
         notes_text = chunks_to_text(chunks)
         sources    = chunks_to_sources(chunks)
 
@@ -160,7 +161,8 @@ def generate_quiz():
         topic        (str)
         difficulty   (str)
         numQuestions (int)
-        useNotes     (bool)
+
+    Uses processed notes if any exist; otherwise falls back to web search.
     """
     data = request.get_json(silent=True)
     if not data:
@@ -169,19 +171,14 @@ def generate_quiz():
     topic         = data.get("topic", "").strip()
     difficulty    = data.get("difficulty", "Intermediate")
     num_questions = int(data.get("numQuestions", 10))
-    use_notes     = bool(data.get("useNotes", False))
 
     if not topic:
         return jsonify({"error": "A topic is required."}), 400
 
     notes_text = None
     sources    = None
-    if use_notes:
-        chunks = load_all_note_chunks()
-        if not chunks:
-            return jsonify({
-                "error": "No processed notes found. Run the notes pipeline first."
-            }), 400
+    chunks = load_all_note_chunks()
+    if chunks:
         notes_text = chunks_to_text(chunks)
         sources    = chunks_to_sources(chunks)
 
@@ -221,6 +218,84 @@ def evaluate_answer():
     except Exception as exc:
         print(f"[ERROR] evaluate-answer: {exc}")
         return jsonify({"error": str(exc)}), 500
+
+
+PROJECT_ROOT = Path(__file__).parent
+UPLOAD_DIRS = {
+    "digital":     PROJECT_ROOT / "notes" / "raw",
+    "handwritten": PROJECT_ROOT / "notes" / "handwritten" / "raw",
+}
+ALLOWED_EXTS = {
+    "digital":     {".txt", ".pdf", ".docx", ".md"},
+    "handwritten": {".pdf", ".png", ".jpg", ".jpeg"},
+}
+
+
+@app.route("/api/upload-notes", methods=["POST"])
+def upload_notes():
+    """
+    Save uploaded note files to the appropriate raw directory.
+
+    Form fields:
+        kind   — "digital" | "handwritten"
+        files  — one or more files (input name "files")
+
+    Digital notes go to notes/raw/.
+    Handwritten notes go to notes/handwritten/raw/.
+    """
+    kind = (request.form.get("kind") or "").strip().lower()
+    if kind not in UPLOAD_DIRS:
+        return jsonify({"error": "kind must be 'digital' or 'handwritten'."}), 400
+
+    files = request.files.getlist("files")
+    if not files:
+        return jsonify({"error": "No files provided."}), 400
+
+    target_dir = UPLOAD_DIRS[kind]
+    target_dir.mkdir(parents=True, exist_ok=True)
+    allowed = ALLOWED_EXTS[kind]
+
+    saved, skipped = [], []
+    for f in files:
+        if not f or not f.filename:
+            continue
+        name = secure_filename(f.filename)
+        ext  = Path(name).suffix.lower()
+        if ext not in allowed:
+            skipped.append({"name": f.filename, "reason": f"unsupported extension {ext or '(none)'}"})
+            continue
+
+        dest = target_dir / name
+        if dest.exists():
+            stem = dest.stem
+            i = 1
+            while dest.exists():
+                dest = target_dir / f"{stem}-{i}{ext}"
+                i += 1
+        f.save(str(dest))
+        saved.append(dest.name)
+
+    processed = None
+    process_error = None
+    if saved:
+        try:
+            if kind == "digital":
+                pages = ingest_notes()
+                chunk_notes()
+                processed = {"pages": len(pages)}
+            else:
+                processed = process_handwritten_notes()
+        except Exception as exc:
+            print(f"[ERROR] post-upload processing ({kind}): {exc}")
+            process_error = str(exc)
+
+    return jsonify({
+        "ok":            True,
+        "saved":         saved,
+        "skipped":       skipped,
+        "processed":     processed,
+        "process_error": process_error,
+    })
 
 
 @app.route("/api/notes-status")

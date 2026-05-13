@@ -28,7 +28,7 @@ from PIL import Image
 RAW_DIR       = Path(__file__).parent.parent / "notes" / "raw"
 PROCESSED_DIR = Path(__file__).parent.parent / "notes" / "processed"
 
-SUPPORTED = {".txt", ".pdf", ".docx", ".png", ".jpg", ".jpeg"}
+SUPPORTED = {".txt", ".md", ".pdf", ".docx", ".png", ".jpg", ".jpeg"}
 
 # PDF pages with fewer than this many chars are assumed scanned → OCR fallback
 _OCR_THRESHOLD = 50
@@ -116,7 +116,7 @@ def ingest_notes(
         print(f"Ingesting: {f.name}")
         ext = f.suffix.lower()
 
-        if ext == ".txt":
+        if ext in {".txt", ".md"}:
             pages = _extract_txt(f)
         elif ext == ".pdf":
             pages = _extract_pdf(f)
