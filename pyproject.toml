@@ -9,4 +9,10 @@ dependencies = [
     "flask-cors>=4.0.0",
     "duckduckgo-search>=6.0.0",
     "python-dotenv>=1.0.0",
+    # notes ingestion pipeline
+    "pymupdf>=1.24.0",       # PDF parsing + scanned-page rendering
+    "python-docx>=1.1.0",    # DOCX parsing
+    "pytesseract>=0.3.10",   # OCR wrapper (also: brew install tesseract)
+    "pillow>=10.0.0",        # image loading for OCR
+    "tavily-python>=0.7.0",  # Tavily search for MCP research layer
 ]

@@ -1,0 +1,227 @@
+[
+  {
+    "chunk_id": "web_chunk_000",
+    "chunk_type": "external",
+    "source_type": "web",
+    "title": "Joint Probability Density Functions and Bivariate Random Variables",
+    "url": "https://www.youtube.com/watch?v=Na0EBR43OHQ",
+    "provider": "tavily",
+    "query": "joint probability density functions explained college",
+    "text": "Joint Probability Density Functions and Bivariate Random Variables\nPatrick J\n1400000 subscribers\n75 likes\n5578 views\n30 Oct 2024\nUnderstanding Joint Probability Density Functions | Examples and Key Concepts\nIn this video, we examine joint probability density functions (PDFs), a key concept in probability and statistics that describes the likelihood of multiple random variables occurring together. Through clear explanations and examples, we'll explore how joint PDFs work, why they're important, and how they apply in real-world scenarios involving bivariate random variables.\n\nWhat You Will Learn:\nThe definition and purpose of joint probability density functions.\nHow to interpret and calculate probabilities using joint PDFs.\nReal-life examples of joint PDFs in action, from studying grades vs. study time to analyzing blood pressure and weight.\n\nVideo Overview:\nWe’ll start by explaining what a joint probability density function is and how it helps to quantify the relationship between two or more random variables. Using a sample table and functions, we'll break down the values of probabilities in various scenarios, making it easier to see how joint PDFs can be calculated and interpreted.\n\nThis video includes practical examples, such as calculating the joint PDF for rolling two dice and assessing probability distributions for different outcomes. We also compute an example of finding the likelihood of people from different groups being promoted.\n\nIf you're interested in probability, statistics, or data analysis, this video provides essential knowledge to build a strong foundation in joint PDFs. Perfect for students, educators, and anyone looking to deepen their understanding of probability theory!\n\nPatreon Support: Support my channel on Patreon to keep learning more about probability and math topics! https://www.patreon.com/patrickjmt?ty=c\n\n\n#JointProbabilityDensity #ProbabilityDensityFunction #BivariateRandomVariables #ProbabilityTheory #StatisticsTutorial #DataScience #ProbabilityDistributions #MathExplained #PatrickJMT #ProbabilityExamples #JointPDF #RandomVariables #MathTutorials #StatisticsLearning #MathExplained\n6 comments\n",
+    "citation": {
+      "title": "Joint Probability Density Functions and Bivariate Random Variables",
+      "url": "https://www.youtube.com/watch?v=Na0EBR43OHQ",
+      "provider": "tavily"
+    }
+  },
+  {
+    "chunk_id": "web_chunk_001",
+    "chunk_type": "external",
+    "source_type": "web",
+    "title": "Joint probability distribution - Wikipedia",
+    "url": "https://en.wikipedia.org/wiki/Joint_probability_distribution",
+    "provider": "tavily",
+    "query": "joint probability density functions explained college",
+    "text": "# Joint probability distribution. are shown from a joint probability distribution. Given random variables {\\displaystyle X,Y,\\ldots }, that are defined on the same probability space, the **multivariate** or **joint probability distribution** for {\\displaystyle X,Y,\\ldots } is a probability distribution that gives the probability that each of {\\displaystyle X,Y,\\ldots } falls in any particular range or discrete set of values specified for that variable. The joint probability distribution can be expressed in terms of a joint cumulative distribution function and either in terms of a joint probability density function (in the case of continuous variables) or joint probability mass function (in the case of discrete variables). If the joint probability density function of random variable X and Y is {\\displaystyle f_{X,Y}(x,y)} , the marginal probability density function of X and Y, which defines the marginal distribution, is given by:. The joint probability mass function of two discrete random variables {\\displaystyle X,Y} is:.",
+    "citation": {
+      "title": "Joint probability distribution - Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Joint_probability_distribution",
+      "provider": "tavily"
+    }
+  },
+  {
+    "chunk_id": "web_chunk_002",
+    "chunk_type": "external",
+    "source_type": "web",
+    "title": "Joint Probability Density Function | Joint Continuity | PDF",
+    "url": "https://www.probabilitycourse.com/chapter5/5_2_1_joint_pdf.php",
+    "provider": "tavily",
+    "query": "joint probability density functions explained college",
+    "text": "## 5.2.1 Joint Probability Density Function (PDF). Here, we will define jointly continuous random variables. Basically, two random variables are jointly continuous if they have a joint probability density function as defined below. Figure 5.6: Figure shows $R\\_{XY}$ as well as integration region for finding $P(Y\\leq \\frac{X}{2})$. | The print version of the book is available on Amazon. | **Practical uncertainty:** *Useful Ideas in Decision-Making, Risk, Randomness, & AI*  ractical Uncertaintly Cover |. **Practical uncertainty:** *Useful Ideas in Decision-Making, Risk, Randomness, & AI*.",
+    "citation": {
+      "title": "Joint Probability Density Function | Joint Continuity | PDF",
+      "url": "https://www.probabilitycourse.com/chapter5/5_2_1_joint_pdf.php",
+      "provider": "tavily"
+    }
+  },
+  {
+    "chunk_id": "web_chunk_003",
+    "chunk_type": "external",
+    "source_type": "web",
+    "title": "Intuition for joint probability density functions: an example",
+    "url": "http://www.columbia.edu/~ad3217/joint_pmf_and_pdf/pdf.html",
+    "provider": "tavily",
+    "query": "joint probability density functions explained college",
+    "text": "The joint cdf F is defined through F(a,b)=P(X≤a,Y≤b) for any real numbers a and b. Following is an interactive 3-D diagram of this joint cdf F.",
+    "citation": {
+      "title": "Intuition for joint probability density functions: an example",
+      "url": "http://www.columbia.edu/~ad3217/joint_pmf_and_pdf/pdf.html",
+      "provider": "tavily"
+    }
+  },
+  {
+    "chunk_id": "web_chunk_004",
+    "chunk_type": "external",
+    "source_type": "web",
+    "title": "Joint Probability Density Function - YouTube",
+    "url": "https://www.youtube.com/watch?v=vy24j1ZJoRc",
+    "provider": "tavily",
+    "query": "joint probability density functions explained college",
+    "text": "... joint PDF is explained. You will find here the definition of Joint Probability Density Function and its mathematical representation (joint",
+    "citation": {
+      "title": "Joint Probability Density Function - YouTube",
+      "url": "https://www.youtube.com/watch?v=vy24j1ZJoRc",
+      "provider": "tavily"
+    }
+  },
+  {
+    "chunk_id": "web_chunk_005",
+    "chunk_type": "external",
+    "source_type": "web",
+    "title": "Joint Probability Density Function - Worked Example - YouTube",
+    "url": "https://www.youtube.com/watch?v=ylcdPSdozQE",
+    "provider": "tavily",
+    "query": "joint probability density functions worked examples",
+    "text": "Joint Probability Density Function - Worked Example. 4.8K views · 6 years ago ...more. Maths Resource. 13.8K. Subscribe. 31. Share. Save.",
+    "citation": {
+      "title": "Joint Probability Density Function - Worked Example - YouTube",
+      "url": "https://www.youtube.com/watch?v=ylcdPSdozQE",
+      "provider": "tavily"
+    }
+  },
+  {
+    "chunk_id": "web_chunk_006",
+    "chunk_type": "external",
+    "source_type": "web",
+    "title": "[PDF] 18.05 S22 Reading 7a: Joint Distributions, Independence",
+    "url": "https://ocw.mit.edu/courses/18-05-introduction-to-probability-and-statistics-spring-2022/mit18_05_s22_class07-prep-a.pdf",
+    "provider": "tavily",
+    "query": "joint probability density functions worked examples",
+    "text": "The joint probability density function (joint pdf) of 𝑋 and 𝑌 is a function 𝑓(𝑥, 𝑦) giving the probability density at (𝑥, 𝑦). That is, the probability that.",
+    "citation": {
+      "title": "[PDF] 18.05 S22 Reading 7a: Joint Distributions, Independence",
+      "url": "https://ocw.mit.edu/courses/18-05-introduction-to-probability-and-statistics-spring-2022/mit18_05_s22_class07-prep-a.pdf",
+      "provider": "tavily"
+    }
+  },
+  {
+    "chunk_id": "web_chunk_007",
+    "chunk_type": "external",
+    "source_type": "web",
+    "title": "Joint probability density function | Definition, explanation, examples",
+    "url": "https://www.statlect.com/glossary/joint-probability-density-function",
+    "provider": "tavily",
+    "query": "joint probability density functions worked examples",
+    "text": "# Joint probability density function. The joint probability density function (joint pdf) is a function used to characterize the probability distribution of several continuous random variables, which together form a continuous random vector. It is a multivariate generalization of the probability density function (pdf), which describes the distribution of a single continuous variable. The main differences between the pdf of a single variable and the joint pdf of multiple variables. * the integral of the **density** of a continuous variable over an interval is equal to the probability that the variable will belong to that interval;. * the multiple integral of the **joint density** of a continuous vector over a given set is equal to the probability that the random vector will belong to that set. The joint probability density function of X is a function ! 1. the first entry of the vector X belongs to the interval !;. 2. the second entry of the vector X belongs to the interval !;.",
+    "citation": {
+      "title": "Joint probability density function | Definition, explanation, examples",
+      "url": "https://www.statlect.com/glossary/joint-probability-density-function",
+      "provider": "tavily"
+    }
+  },
+  {
+    "chunk_id": "web_chunk_008",
+    "chunk_type": "external",
+    "source_type": "web",
+    "title": "Joint Probability Distribution (Step-by-Step Tutorials)",
+    "url": "https://calcworkshop.com/joint-probability-distribution/",
+    "provider": "tavily",
+    "query": "joint probability density functions statistics tutorial",
+    "text": "## Joint Discrete Random Variables. * Introduction to Video: Joint Probability for Discrete Random Variables. * Overview and formulas of Joint Probability for Discrete Random Variables. * Consider the joint probability mass function and find the probability (Example #1). * Create a joint probability distribution, joint marginal distribution, mean and variance, probability, and determine independence (Example #2). * Determine the joint probability distribution and marginal distribution and find probability (Example #4). ## Joint Continuous Random Variables. * Introduction to Video: Joint Probability for Continuous Random Variables. * Determine the covariance and correlation for a joint probability distribution (Example #5). * Find the covariance and correlation given a continuous joint density function (Example #6). * Determine the expected value of the linear combination for continuous and discrete random variables (Examples #3-4). * Find the marginal density and probability for the continuous joint distribution (Problem #2). * Find the conditional distribution, expected value, and variance for the discrete joint density function (Problem #3).",
+    "citation": {
+      "title": "Joint Probability Distribution (Step-by-Step Tutorials)",
+      "url": "https://calcworkshop.com/joint-probability-distribution/",
+      "provider": "tavily"
+    }
+  },
+  {
+    "chunk_id": "web_chunk_009",
+    "chunk_type": "external",
+    "source_type": "web",
+    "title": "[PDF] Joint densities",
+    "url": "http://www.stat.yale.edu/~pollard/Courses/241.fall97/Joint.pdf",
+    "provider": "tavily",
+    "query": "joint probability density functions statistics tutorial",
+    "text": "The rest of the calculation of the joint density ψ(·, ·) for (U, V ) is easy: δuδvψ(u0, v0) ≈P{(U, V ) ∈1} = P{(X, Y) ∈R} Statistics 241: 28 October 1997 c ⃝David Pollard Chapter 10 Joint densities Page 5 ≈f (x0, y0)(area of R) ≈xα−1 0 e−x0 0(α) yβ−1 0 e−y0 0(β) δu δv v0 Substitute x0 = u0v0 and y0 = (1 −u0)v0, then rearrange factors, to get the joint density ψ(u0, v0) = uα−1 0 vα−1 0 e−u0v0 0(α) (1 −u0)β−1vβ−1 0 e−v0+u0v0 0(β) v0 If we write g(u) = uα−1(1 −u)β−1 B(α, β) the beta(α, β) density h(v) = vα+β−1e−v 0(α + β) the gamma(α + β) density then ψ(u, v) = g(u)h(v) B(α, β)0(α + β) 0(α)0(β) for 0 < u < 1 and 0 < v < ∞ I have dropped the subscripting zeros because I no longer need to keep your attention ﬁxed on a particular (u0, v0) in the (U, V ) strip.",
+    "citation": {
+      "title": "[PDF] Joint densities",
+      "url": "http://www.stat.yale.edu/~pollard/Courses/241.fall97/Joint.pdf",
+      "provider": "tavily"
+    }
+  },
+  {
+    "chunk_id": "web_chunk_010",
+    "chunk_type": "external",
+    "source_type": "web",
+    "title": "Joint Probability Density Practice Problems | PDF - Scribd",
+    "url": "https://www.scribd.com/document/942669545/Unit-3-Practice-Questions-Assignment-1",
+    "provider": "tavily",
+    "query": "joint probability density functions common mistakes practice problems",
+    "text": "The document contains practice problems for a course on multiple random variables, focusing on joint sample spaces, joint density functions, and statistical",
+    "citation": {
+      "title": "Joint Probability Density Practice Problems | PDF - Scribd",
+      "url": "https://www.scribd.com/document/942669545/Unit-3-Practice-Questions-Assignment-1",
+      "provider": "tavily"
+    }
+  },
+  {
+    "chunk_id": "web_chunk_011",
+    "chunk_type": "external",
+    "source_type": "web",
+    "title": "Problems on Joint PDF- Joint Probability Distribution - YouTube",
+    "url": "https://www.youtube.com/watch?v=oLAzR4tqPHE",
+    "provider": "tavily",
+    "query": "joint probability density functions common mistakes practice problems",
+    "text": "This video lecture is about Joint Probability Density Function (Joint PDF). This solved problem on joint probability density function will",
+    "citation": {
+      "title": "Problems on Joint PDF- Joint Probability Distribution - YouTube",
+      "url": "https://www.youtube.com/watch?v=oLAzR4tqPHE",
+      "provider": "tavily"
+    }
+  },
+  {
+    "chunk_id": "web_chunk_012",
+    "chunk_type": "external",
+    "source_type": "web",
+    "title": "Numerical Examples on Joint Probability Density Functions - YouTube",
+    "url": "https://www.youtube.com/watch?v=z8uEPFKRMIk",
+    "provider": "tavily",
+    "query": "joint probability density functions common mistakes practice problems",
+    "text": "Numerical Examples on Joint Probability Density Functions. 376 views · 1 year ago ...more. NPTEL-NOC IITM. 607K. Subscribe. 0. Share. Save.",
+    "citation": {
+      "title": "Numerical Examples on Joint Probability Density Functions - YouTube",
+      "url": "https://www.youtube.com/watch?v=z8uEPFKRMIk",
+      "provider": "tavily"
+    }
+  },
+  {
+    "chunk_id": "web_chunk_013",
+    "chunk_type": "external",
+    "source_type": "web",
+    "title": "Joint & Marginal Probability Density Functions With Solved ...",
+    "url": "https://www.youtube.com/watch?v=_f45G6XmFjw",
+    "provider": "tavily",
+    "query": "joint probability density functions common mistakes practice problems",
+    "text": "This video is a prerequisite video to assist learners in joint probability distributions and stochastic processes.",
+    "citation": {
+      "title": "Joint & Marginal Probability Density Functions With Solved ...",
+      "url": "https://www.youtube.com/watch?v=_f45G6XmFjw",
+      "provider": "tavily"
+    }
+  },
+  {
+    "chunk_id": "web_chunk_014",
+    "chunk_type": "external",
+    "source_type": "web",
+    "title": "[PDF] Fall 18 1. Let X and Y be independent random ... - Arizona Math",
+    "url": "https://math.arizona.edu/~tgk/464_f18/sample2_sol.pdf",
+    "provider": "tavily",
+    "query": "joint probability density functions common mistakes practice problems",
+    "text": "Let X and Y be independent random variables. (a) Find the joint probability density function (pdf) of X, Y . Let X, Y be jointly continuous random variables with joint probability density function (pdf) fX,Y (x, y) = \u001a 4xy, if 0 ≤x ≤1, 0 ≤y ≤1 0, otherwise Let Z = X + Y . Let X and Y be independent random variables, each of which has a standard normal pdf. Solution: E[Z] = E[Y ] −E[X] + 4 = 4. Random variables X and Y have joint cumulative distribution function (cdf) FX,Y (x, y) = \u001a 1 π tan−1(x) + c, if y ≥0 0, if y < 0 where c is some constant. Solution: Yes, the joint cdf factors into a function of x times a function of y, so they are independent. (c) Find the joint probability density function (pdf) for X, Y .",
+    "citation": {
+      "title": "[PDF] Fall 18 1. Let X and Y be independent random ... - Arizona Math",
+      "url": "https://math.arizona.edu/~tgk/464_f18/sample2_sol.pdf",
+      "provider": "tavily"
+    }
+  }
+]
