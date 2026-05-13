@@ -1,5 +1,4 @@
 from pathlib import Path
-
 from openai import OpenAI
 
 
@@ -62,7 +61,13 @@ Use these section headers in order. Omit any optional section that would be fill
 """
 
 
-def generate_study_guide(grade_level: str, major_or_class_level: str, topic: str, output_path: Path = DEFAULT_OUTPUT_PATH) -> str:
+def generate_study_guide(
+    grade_level: str,
+    major_or_class_level: str,
+    topic: str,
+    notes: str = "",
+    output_path: Path = DEFAULT_OUTPUT_PATH,
+) -> str:
     client = OpenAI()
 
     user_prompt = (
@@ -70,6 +75,14 @@ def generate_study_guide(grade_level: str, major_or_class_level: str, topic: str
         f"major_or_class_level: {major_or_class_level}\n"
         f"topic: {topic}"
     )
+    if notes.strip():
+        user_prompt += (
+            "\n\n<student_notes>\n"
+            f"{notes.strip()}\n"
+            "</student_notes>\n"
+            "Incorporate the student's notes above where relevant. "
+            "Prefer their framing and terminology when it matches the canonical material."
+        )
 
     response = client.chat.completions.create(
         model="gpt-4o",

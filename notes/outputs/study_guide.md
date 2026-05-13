@@ -1,85 +1,81 @@
-# Binary Search Trees (BST) — Cheat Sheet
+# LLM Fundamentals — Cheat Sheet
 
 ## TL;DR
-- **BST Properties**: Left < Root < Right
-- **Operations**: Insert, Delete, Search in $O(\log n)$ time *average*
-- **Traversal Orders**: Inorder → <span class="tip">Sorted output</span>
-- <span class="warn">Imbalance</span> can degrade to $O(n)$
-- **Balanced BSTs**: AVL, Red-Black Trees maintain $O(\log n)$
+- **LLMs (Large Language Models)** leverage immense amounts of data and parameters to process language.
+- **Transformer Architecture** is central to LLMs, using *self-attention* for parallel processing.
+- **Pre-training & Fine-tuning** are crucial steps: generic knowledge base first, task-specific second.
+- **BERT vs. GPT**: BERT is bi-directional; GPT is uni-directional.
+- **Tokenization**: Divides text into understandable units for the model.
 
 ## Key Terms
 
-| Term | Definition |
-| --- | --- |
-| <span class="key">Binary Search Tree (BST)</span> | A tree with nodes in left < root < right order |
-| <span class="key">Root Node</span> | Topmost node in the tree |
-| <span class="key">Leaf Node</span> | Node with no children |
-| <span class="key">Height</span> | Longest path from root to a leaf |
-| <span class="key">AVL Tree</span> | A self-balancing binary search tree |
-| <span class="key">Red-Black Tree</span> | A balanced BST using color properties |
+| Term                          | Definition                                                                 |
+|-------------------------------|-----------------------------------------------------------------------------|
+| <span class="key">LLM</span>  | Models handling vast language data, using billions of parameters.        |
+| Transformer                   | Model architecture utilizing *attention* mechanisms for language tasks.  |
+| Self-Attention                | Mechanism allowing models to focus on different parts of the input sequence. |
+| Pre-training                  | Initial training phase on a general corpus.                              |
+| Fine-tuning                   | Adjusting a pre-trained model for specific tasks.                       |
 
 ## Core Concepts
 
-### BST Properties
-- **Structure**: Binary tree where each node has max two children.
-- **Rule**: Left descendants ≤ node ≤ right descendants.
-- **Paths**: All paths from root to leaf involve searching left or right.
+### Transformer Architecture
+- **Model Components**: Encoder-Decoder; focus on **Self-Attention**.
+- **Self-Attention**: Maps the input sequence onto itself; allows model to weigh importance.
+- **Parallel Processing**: Enables faster computations over sequential models.
 
-### Traversal Orders
-- **In-order**: Left → Root → Right — Produces sorted sequence.
-- **Pre-order**: Root → Left → Right.
-- **Post-order**: Left → Right → Root.
-- **Level-order**: Breadth-first search.
+### Tokenization
+- **Purpose**: Breaks text into smaller units (tokens).
+- **Methods**:
+  - <span class="tip">WordPiece</span>: Subword tokenization (used in BERT).
+  - <span class="tip">Byte-Pair Encoding (BPE)</span>: Adaptively splits words more common to rare; beneficial for GPT.
 
-### Operations
-- **Search**: Compare against root, recur left/right (worst $O(n)$).
-- **Insertion**: Find empty spot following BST rule, insert there.
-- **Deletion**: 
-  - **No child**: Remove leaf.
-  - **One child**: Bypass the node.
-  - **Two children**: Find in-order successor/predecessor.
+### Pre-training and Fine-tuning
+- **Pre-training**:
+  - Trains model on generic tasks (e.g., cloze tasks for BERT).
+- **Fine-tuning**:
+  - Tailored adjustment towards specific downstream tasks like classification or Q&A.
+
+### BERT vs. GPT
+- **BERT (Bidirectional Encoder Representations from Transformers)**:
+  - **Training**: Bi-directional. Masks tokens to predict missing input values.
+  - **Use**: Generally for tasks requiring understanding of context.
+- **GPT (Generative Pre-trained Transformer)**:
+  - **Training**: Uni-directional. Predicts next word in sequence.
+  - **Use**: Typically for generative tasks such as text completion.
 
 ## Formulas / Rules
 
-| Formula / Rule | Symbols | When to Apply |
-| --- | --- | --- |
-| Height (\(h\)) | $h = \log_2(n)$ | Balanced BST |
-| Number of Nodes | $n = 2^{h+1} - 1$ | Full BST |
-| Balanced Condition (AVL) | $|height(left) - height(right)| \leq 1$ | Post-insertion |
+| Formula                               | Symbols       | When to Apply                          |
+|---------------------------------------|---------------|----------------------------------------|
+| Self-Attention Score: $QK^T / \sqrt{d_k}$ | $Q, K, d_k$   | Calculating attention weights.         |
+| Activation of Attention: $Softmax(z)$ | $z$           | Normalizing attention scores for input. |
 
 ## Worked Mini-Examples
 
-1. **Inserting 5 into BST [2,3,4,7]:**
-   - Steps: 7 > 5, place 5 as left child of 7
-   - Result: [2,3,4,5,7]
+- **Example**: Given text "The cat sat on the mat", predict masked word.
+  - **Key Step**: Input "The [MASK] sat on the mat".
+  - **Answer**: BERT predicts "cat".
 
-2. **Deleting node 4 with two children [2,3,4,7]:**
-   - Find in-order successor (5)
-   - Replace 4 with 5
-   - Result: [2,3,5,7]
+- **Example**: Complete sentence using GPT: "Once upon a time, a girl ventured".
+  - **Key Step**: Predict subsequent words based on prior context.
+  - **Answer**: GPT results in continuation — "into a dense forest."
 
 ## Common Mistakes / Gotchas
-- <span class="warn">Misplacing Nodes</span>: Always verify position during insertions.
-- **Assumption**: Thinking average $O(\log n)$ is guaranteed without balance.
-- **Skipping Traversals**: Missing inverted order (sorted descending).
-- <span class="warn">Forgetting Edge Cases</span>: Handle leaf and no-child nodes correctly in deletions.
+- Misunderstanding **tokenization methods** can affect model input structure.
+- **Mixing pre-training tasks**: Bi-directional (BERT) vs. Uni-directional (GPT) contexts.
+- Overlooking **fine-tuning necessity**: Model may not perform specific tasks without it.
 
 ## Quick-Check Questions
-1. What is a BST?
-2. Describe in-order traversal.
-3. How do you find a node's successor?
-4. What guarantees $O(\log n)$ operations in BSTs?
-5. How would you delete a node with two children?
-6. What's the worst-case complexity of searching in a degenerate BST?
-7. What tree property guarantees sorted in-order output?
-8. How do you maintain balance in an AVL tree?
+1. What is the main advantage of using the Transformer architecture?
+2. How does self-attention differ from traditional RNN attention?
+3. Define the difference between pre-training and fine-tuning.
+4. Explain the key distinction between BERT and GPT language models.
+5. What is the role of tokenization in LLMs?
 
 ## Answers
-1. A tree where left subtree < root < right subtree.
-2. Left → Root → Right, producing sorted order.
-3. Successor is the leftmost node of the right subtree.
-4. The tree is balanced (e.g., AVL, Red-Black).
-5. Replace with in-order successor or predecessor.
-6. $O(n)$
-7. In-order traversal.
-8. By rotating nodes and maintaining height condition.
+1. Enables parallel processing, leading to faster computations.
+2. Self-attention allows each word to attend to every other word in the input.
+3. Pre-training involves learning on generic tasks; fine-tuning tailors the model for specific tasks.
+4. BERT is bi-directional for context understanding, while GPT is uni-directional for text generation.
+5. Tokenization breaks text into comprehensible units for the model.

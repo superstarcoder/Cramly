@@ -1,0 +1,9 @@
+Generate a comprehensive study guide on: **<<topic>>**
+
+Based on the following note content:
+
+--- NOTES BEGIN ---
+<<notes_text>>
+--- NOTES END ---
+
+TODO: expand with specific format requirements (sections, depth, citation style).

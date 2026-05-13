@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cramly — Study Guide</title>
+
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  <style>
+    /* Markdown-viewer-only semantic-class colors */
+    :root {
+      --key: #0969da;
+      --warn: #d73a49;
+      --tip: #1a7f37;
+      --heading: #6f42c1;
+      --subheading: #0550ae;
+      --label-bg: #ece8de;
+      --label-fg: #57606a;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --key: #79c0ff;
+        --warn: #ff7b72;
+        --tip: #3fb950;
+        --heading: #d2a8ff;
+        --subheading: #79c0ff;
+        --label-bg: #1c2330;
+        --label-fg: #c9d1d9;
+      }
+    }
+
+    /* Fixed back link */
+    .sg-back-link {
+      position: fixed;
+      top: 1rem;
+      left: 1.25rem;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      text-decoration: none;
+      z-index: 100;
+      padding: 0.4rem 0.7rem;
+      border-radius: var(--radius-sm);
+      transition: color var(--transition), background var(--transition);
+    }
+    .sg-back-link:hover { color: var(--accent); background: var(--surface); text-decoration: none; }
+
+    /* Input + loading screen extras */
+    .sg-form-card { display: flex; flex-direction: column; gap: 1.5rem; max-width: 620px; }
+    .sg-form-card form { display: flex; flex-direction: column; gap: 1.25rem; }
+    .field textarea {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.96rem;
+      padding: 0.75rem 0.95rem;
+      outline: none;
+      resize: vertical;
+      min-height: 110px;
+      width: 100%;
+      transition: border-color var(--transition);
+      line-height: 1.55;
+    }
+    .field textarea:focus { border-color: var(--accent); }
+
+    .sg-file-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .sg-file-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.45rem 0.95rem;
+      border: 1px dashed var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: color var(--transition), border-color var(--transition), background var(--transition);
+      user-select: none;
+    }
+    .sg-file-btn:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+    .sg-file-name {
+      font-size: 0.85rem;
+      font-family: "JetBrains Mono", monospace;
+      max-width: 280px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .sg-file-name.has-file { color: var(--accent); }
+
+    .sg-error {
+      background: var(--error-bg);
+      border: 1px solid var(--error);
+      color: var(--error);
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .sg-loading-card {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.6rem;
+      max-width: 520px;
+    }
+    .sg-loading-card h2 {
+      font-family: "Fraunces", Georgia, serif;
+      font-size: 1.45rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    .sg-loading-topic {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+    .sg-loading-hint {
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      font-family: "JetBrains Mono", monospace;
+      margin-top: 0.4rem;
+    }
+
+    /* Display screen: top-align so long docs scroll naturally */
+    #display-screen.screen.active { justify-content: flex-start; padding-top: 3.5rem; padding-bottom: 5rem; }
+    .sg-display-actions {
+      max-width: 820px;
+      margin: 1.25rem auto 0;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    /* Markdown viewer (scoped to .markdown-view to avoid clobbering form/screen styles) */
+    .markdown-view {
+      max-width: 820px;
+      margin: 0 auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 3rem 3.25rem 3.5rem;
+      animation: fadeInDoc 0.35s ease-out;
+      line-height: 1.65;
+    }
+    @keyframes fadeInDoc {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @media (max-width: 640px) {
+      .markdown-view { padding: 2rem 1.5rem; border-radius: 10px; }
+    }
+
+    .markdown-view h1, .markdown-view h2, .markdown-view h3, .markdown-view h4 {
+      font-family: "Fraunces", Georgia, "Times New Roman", serif;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+    }
+    .markdown-view h1 {
+      font-size: 2.4rem;
+      font-weight: 800;
+      margin: 0 0 1.5rem;
+      padding-bottom: 0.75rem;
+      background: var(--grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      border-bottom: 2px solid var(--rule);
+    }
+    .markdown-view h2 {
+      font-size: 1.55rem;
+      font-weight: 700;
+      margin: 2.5rem 0 1rem;
+      padding-left: 0.75rem;
+      border-left: 4px solid var(--accent);
+    }
+    .markdown-view h3 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin: 1.75rem 0 0.6rem;
+    }
+    .markdown-view h4 {
+      font-size: 1.02rem;
+      font-weight: 600;
+      margin: 1.25rem 0 0.4rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .markdown-view p { margin: 0.6rem 0 1rem; }
+    .markdown-view a { color: var(--accent); text-decoration: none; border-bottom: 1px dashed var(--accent); }
+    .markdown-view a:hover { border-bottom-style: solid; text-decoration: none; }
+    .markdown-view strong { color: var(--text); font-weight: 600; }
+    .markdown-view em { color: var(--text-muted); }
+    .markdown-view ul, .markdown-view ol { padding-left: 1.4rem; margin: 0.6rem 0 1rem; }
+    .markdown-view li { margin: 0.3rem 0; }
+    .markdown-view li::marker { color: var(--accent); }
+    .markdown-view hr { border: none; height: 1px; background: var(--rule); margin: 2rem 0; }
+
+    .markdown-view code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: var(--surface-2);
+      padding: .15em .4em;
+      border-radius: 5px;
+      font-size: 0.88em;
+      border: 1px solid var(--rule);
+    }
+    .markdown-view pre {
+      background: var(--surface-2);
+      padding: 1rem 1.15rem;
+      border-radius: 10px;
+      overflow-x: auto;
+      border: 1px solid var(--rule);
+      line-height: 1.55;
+    }
+    .markdown-view pre code { background: transparent; padding: 0; border: none; font-size: 0.88em; }
+
+    .markdown-view table {
+      border-collapse: separate;
+      border-spacing: 0;
+      margin: 1.2rem 0;
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      font-size: 0.95em;
+    }
+    .markdown-view th, .markdown-view td { padding: .65em .9em; text-align: left; border-bottom: 1px solid var(--rule); }
+    .markdown-view tbody tr:last-child td { border-bottom: none; }
+    .markdown-view tbody tr:nth-child(even) { background: var(--surface-2); }
+    .markdown-view th {
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 600;
+      font-size: 0.82em;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .markdown-view blockquote {
+      color: var(--text-muted);
+      border-left: 4px solid var(--accent);
+      background: var(--accent-soft);
+      margin: 1.2rem 0;
+      padding: 0.6rem 1.1rem;
+      border-radius: 0 8px 8px 0;
+      font-style: italic;
+    }
+    .markdown-view blockquote p:last-child { margin-bottom: 0; }
+    .markdown-view blockquote p:first-child { margin-top: 0; }
+
+    .markdown-view .katex-display {
+      padding: 0.6rem 0.8rem;
+      margin: 1rem 0;
+      background: var(--surface-2);
+      border-radius: 8px;
+      border: 1px solid var(--rule);
+      overflow-x: auto;
+    }
+    .markdown-view .katex { font-size: 1.05em; }
+
+    .markdown-view .key  { color: var(--key); font-weight: 600; }
+    .markdown-view .warn { color: var(--warn); font-weight: 500; }
+    .markdown-view .tip  { color: var(--tip); font-weight: 500; }
+    .markdown-view .heading {
+      color: var(--heading);
+      font-family: "Fraunces", Georgia, serif;
+      font-weight: 700;
+      font-size: 1.08em;
+    }
+    .markdown-view .subheading { color: var(--subheading); font-weight: 600; }
+    .markdown-view .label {
+      display: inline-block;
+      background: var(--label-bg);
+      color: var(--label-fg);
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.72em;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 0.18em 0.55em;
+      border-radius: 5px;
+      vertical-align: middle;
+      border: 1px solid var(--rule);
+    }
+  </style>
+</head>
+<body>
+  <a href="/" class="sg-back-link">← Back to menu</a>
+
+  <div id="app">
+
+    <!-- ============================================================
+         SCREEN 1: Input
+    ============================================================ -->
+    <section id="input-screen" class="screen active">
+      <div class="card sg-form-card">
+        <div class="logo">
+          <h1>Study Guide</h1>
+          <p class="tagline">Generate a dense, exam-prep cheat sheet from any topic.</p>
+        </div>
+
+        <form id="sg-form">
+          <div class="field">
+            <label for="sg-topic">Topic</label>
+            <input
+              type="text" id="sg-topic" required autocomplete="off"
+              placeholder="e.g. Binary Search Trees, Photosynthesis, Time Series..."
+            />
+          </div>
+
+          <div class="options-row">
+            <div class="field">
+              <label for="sg-grade">Grade level</label>
+              <select id="sg-grade">
+                <option>High School</option>
+                <option>College Freshman</option>
+                <option selected>College Sophomore</option>
+                <option>College Junior</option>
+                <option>College Senior</option>
+                <option>Graduate</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="sg-major">Major / class</label>
+              <input
+                type="text" id="sg-major" required autocomplete="off"
+                placeholder="e.g. CS — Data Structures"
+              />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="sg-notes">Notes (optional)</label>
+            <div class="sg-file-row">
+              <label class="sg-file-btn" for="sg-file">
+                <span>Upload file</span>
+                <input
+                  type="file" id="sg-file"
+                  accept=".txt,.md,.markdown,text/plain,text/markdown"
+                  hidden
+                />
+              </label>
+              <span id="sg-file-name" class="sg-file-name text-muted">No file selected</span>
+              <button type="button" id="sg-file-clear" class="btn-link hidden">Clear</button>
+            </div>
+            <textarea
+              id="sg-notes"
+              placeholder="Paste lecture notes, slides, definitions — or upload a .txt / .md file above..."
+            ></textarea>
+          </div>
+
+          <div id="sg-error" class="sg-error hidden"></div>
+
+          <button type="submit" class="btn btn-primary btn-full">Generate Study Guide</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SCREEN 2: Loading
+    ============================================================ -->
+    <section id="loading-screen" class="screen">
+      <div class="card sg-loading-card">
+        <div class="spinner"></div>
+        <h2>Generating your study guide…</h2>
+        <p id="sg-loading-topic" class="sg-loading-topic"></p>
+        <p class="sg-loading-hint">this usually takes 10–20 seconds</p>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SCREEN 3: Display (rendered markdown)
+    ============================================================ -->
+    <section id="display-screen" class="screen">
+      <div id="sg-content" class="markdown-view"></div>
+      <div class="sg-display-actions">
+        <button class="btn btn-secondary" id="sg-new-btn">Generate another</button>
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    // ---- Markdown setup --------------------------------------------------
+    marked.setOptions({ gfm: true, breaks: false });
+    const mathBlock = {
+      name: "mathBlock",
+      level: "block",
+      start(src) { return src.indexOf("$$"); },
+      tokenizer(src) {
+        const match = /^\$\$([\s\S]+?)\$\$/.exec(src);
+        if (match) return { type: "mathBlock", raw: match[0], text: match[1] };
+      },
+      renderer(token) { return `$$${token.text}$$`; },
+    };
+    const mathInline = {
+      name: "mathInline",
+      level: "inline",
+      start(src) { return src.indexOf("$"); },
+      tokenizer(src) {
+        const match = /^\$(?!\s)([^\$\n]+?)(?<!\s)\$/.exec(src);
+        if (match) return { type: "mathInline", raw: match[0], text: match[1] };
+      },
+      renderer(token) { return `$${token.text}$`; },
+    };
+    marked.use({ extensions: [mathBlock, mathInline] });
+
+    // ---- Screen switching ------------------------------------------------
+    const screens = {
+      input:   document.getElementById("input-screen"),
+      loading: document.getElementById("loading-screen"),
+      display: document.getElementById("display-screen"),
+    };
+    function showScreen(name) {
+      for (const s of Object.values(screens)) s.classList.remove("active");
+      screens[name].classList.add("active");
+      window.scrollTo({ top: 0 });
+    }
+
+    const errorEl = document.getElementById("sg-error");
+    function showError(msg) {
+      errorEl.textContent = msg;
+      errorEl.classList.remove("hidden");
+    }
+    function clearError() { errorEl.classList.add("hidden"); }
+
+    // ---- Render markdown into display screen -----------------------------
+    function renderMarkdown(md) {
+      const el = document.getElementById("sg-content");
+      el.innerHTML = marked.parse(md || "");
+      if (window.renderMathInElement) {
+        renderMathInElement(el, {
+          delimiters: [
+            { left: "$$", right: "$$", display: true },
+            { left: "$",  right: "$",  display: false },
+            { left: "\\(", right: "\\)", display: false },
+            { left: "\\[", right: "\\]", display: true },
+          ],
+          throwOnError: false,
+        });
+      }
+    }
+
+    // ---- Form submit -----------------------------------------------------
+    document.getElementById("sg-form").addEventListener("submit", async (ev) => {
+      ev.preventDefault();
+      clearError();
+
+      const topic                = document.getElementById("sg-topic").value.trim();
+      const grade_level          = document.getElementById("sg-grade").value;
+      const major_or_class_level = document.getElementById("sg-major").value.trim();
+      const notes                = document.getElementById("sg-notes").value;
+
+      if (!topic || !major_or_class_level) {
+        showError("Topic and major / class level are required.");
+        return;
+      }
+
+      document.getElementById("sg-loading-topic").textContent = topic;
+      showScreen("loading");
+
+      try {
+        const res = await fetch("/api/generate-study-guide", {
+          method:  "POST",
+          headers: { "Content-Type": "application/json" },
+          body:    JSON.stringify({ topic, grade_level, major_or_class_level, notes }),
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.error || `HTTP ${res.status}`);
+        }
+        const data = await res.json();
+        renderMarkdown(data.markdown || "");
+        showScreen("display");
+      } catch (err) {
+        showScreen("input");
+        showError(`Failed to generate study guide: ${err.message}`);
+      }
+    });
+
+    document.getElementById("sg-new-btn").addEventListener("click", () => {
+      clearError();
+      showScreen("input");
+    });
+
+    // ---- File upload → reads into the notes textarea ---------------------
+    const fileInput  = document.getElementById("sg-file");
+    const fileName   = document.getElementById("sg-file-name");
+    const fileClear  = document.getElementById("sg-file-clear");
+    const notesArea  = document.getElementById("sg-notes");
+
+    fileInput.addEventListener("change", () => {
+      const file = fileInput.files[0];
+      if (!file) return;
+      const ok = /\.(txt|md|markdown)$/i.test(file.name) || /^text\//.test(file.type);
+      if (!ok) {
+        showError("Only plain-text files are supported (.txt, .md).");
+        fileInput.value = "";
+        return;
+      }
+      clearError();
+      const reader = new FileReader();
+      reader.onload = () => {
+        notesArea.value = String(reader.result || "");
+        fileName.textContent = file.name;
+        fileName.classList.add("has-file");
+        fileClear.classList.remove("hidden");
+      };
+      reader.onerror = () => showError("Failed to read file.");
+      reader.readAsText(file);
+    });
+
+    fileClear.addEventListener("click", () => {
+      fileInput.value = "";
+      notesArea.value = "";
+      fileName.textContent = "No file selected";
+      fileName.classList.remove("has-file");
+      fileClear.classList.add("hidden");
+    });
+  </script>
+</body>
+</html>
