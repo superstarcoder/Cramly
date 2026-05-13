@@ -46,6 +46,37 @@
       background: var(--surface);
       text-decoration: none;
     }
+
+    .upload-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      padding: 0.6rem 0;
+      border-top: 1px solid var(--rule);
+    }
+    .upload-group:first-of-type { border-top: none; padding-top: 0.2rem; }
+    .upload-label {
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+    .upload-row {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+    .upload-row input[type="file"] {
+      flex: 1;
+      min-width: 0;
+      font-size: 0.85rem;
+    }
+    .upload-status {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      min-height: 1.1em;
+    }
+    .upload-status.success { color: var(--success); }
+    .upload-status.error   { color: var(--error); }
   </style>
 </head>
 <body>
@@ -91,25 +122,45 @@
           </div>
         </div>
 
-        <!-- Notes toggle — groupmate adds file upload UI inside this section -->
         <div class="notes-section">
           <div class="notes-toggle-row">
-            <label class="toggle-label" for="use-notes-checkbox">
-              <input type="checkbox" id="use-notes-checkbox" />
-              Use my notes
-            </label>
+            <span class="toggle-label">Your notes</span>
             <span id="notes-status-badge" class="notes-status-badge">checking...</span>
           </div>
-          <p id="notes-hint" class="notes-hint text-muted hidden"></p>
 
-          <!--
-            TODO (groupmate — steps 4-6):
-            Add your note upload and processing UI here.
-            After processing, save output to:
-              notes/processed/chunks.json   (chunked text)
-              notes/processed/sources.json  (source metadata)
-            The quiz backend reads these files when "Use Notes" is checked.
-          -->
+          <div class="upload-group">
+            <label class="upload-label" for="digital-notes-input">
+              Upload digital notes
+            </label>
+            <div class="upload-row">
+              <input
+                type="file" id="digital-notes-input"
+                accept=".txt,.pdf,.docx,.md"
+                multiple
+              />
+              <button type="button" class="btn btn-secondary" id="digital-upload-btn">
+                Upload
+              </button>
+            </div>
+            <span id="digital-upload-status" class="upload-status"></span>
+          </div>
+
+          <div class="upload-group">
+            <label class="upload-label" for="handwritten-notes-input">
+              Upload handwritten notes
+            </label>
+            <div class="upload-row">
+              <input
+                type="file" id="handwritten-notes-input"
+                accept=".pdf,.png,.jpg,.jpeg"
+                multiple
+              />
+              <button type="button" class="btn btn-secondary" id="handwritten-upload-btn">
+                Upload
+              </button>
+            </div>
+            <span id="handwritten-upload-status" class="upload-status"></span>
+          </div>
         </div>
 
         <button type="submit" class="btn btn-primary btn-full">Generate Quiz</button>

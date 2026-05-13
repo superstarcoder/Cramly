@@ -1,7 +1,16 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git check-ignore *)"
+      "Bash(git check-ignore *)",
+      "Bash(./venv/bin/python *)",
+      "Bash(curl -s -o /dev/null -w \"GET /api/notes-status -> %{http_code}\\\\n\" http://localhost:8080/api/notes-status)",
+      "Bash(curl -s -o /tmp/upload_test.json -w \"POST /api/upload-notes \\(empty\\) -> %{http_code}\\\\n\" -X POST http://localhost:8080/api/upload-notes)",
+      "Read(//tmp/**)",
+      "Bash(echo \"hello from test\")",
+      "Bash(curl -s -X POST http://localhost:8080/api/upload-notes -F kind=digital -F files=@/tmp/test-note.txt)",
+      "Bash(curl -s -X POST http://localhost:8080/api/upload-notes -F kind=digital -F files=@/tmp/bio-note.txt)",
+      "Bash(curl -s -X POST http://localhost:8080/api/generate-study-guide -H 'Content-Type: application/json' -d '{\"topic\":\"Test\",\"grade_level\":\"College Sophomore\",\"major_or_class_level\":\"CS\",\"notes\":\"\"}' -o /tmp/sg_resp.json -w 'HTTP %{http_code}\\\\n')",
+      "Bash(python3 -c ' *)"
     ]
   }
 }

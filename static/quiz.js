@@ -4,10 +4,10 @@
  * Abstract:
  *   All client-side logic for Cramly's interactive quiz. Manages the four
  *   screens (input, agent, quiz, results) and handles:
- *     - Notes status check on load (GET /api/notes-status)
+ *     - Notes status check on load (GET /api/notes-status) — informational
+ *       badge only; the backend automatically uses processed notes if any
+ *       exist, otherwise falls back to web search.
  *     - SSE connection to stream the AI agent's live decisions
- *     - "Use Notes" mode: passes useNotes=true to the SSE endpoint so the
- *       backend generates from processed notes instead of web searches
  *     - Minimal agent progress view with opt-in detailed log
  *     - Multiple-choice and true/false answer checking
  *     - Short-answer LLM grading via POST /api/evaluate-answer (with
@@ -18,8 +18,7 @@
  * Code Flow:
  *   1. init()                  — wire all static DOM event listeners,
  *                                check notes availability.
- *   2. handleFormSubmit()      — read form (incl. useNotes checkbox),
- *                                go to agent screen, open SSE.
+ *   2. handleFormSubmit()      — read form, go to agent screen, open SSE.
  *   3. triggerQuizGeneration() — shared entry point used by form AND by the
  *                                post-quiz "harder/similar/subtopic" buttons.
  *   4. openAgentStream()       — open EventSource; each event calls
@@ -48,7 +47,6 @@ const state = {
   topic:        "",     // stored so post-quiz options can re-use it
   difficulty:   "Intermediate",
   numQuestions: 10,
-  useNotes:     false,  // whether the last quiz was generated from notes
   searchCount:  0       // counts search_start events for the progress display
 };
 
@@ -69,8 +67,6 @@ function showScreen(id) {
 
 async function checkNotesStatus() {
   const badge = document.getElementById("notes-status-badge");
-  const hint  = document.getElementById("notes-hint");
-  const box   = document.getElementById("use-notes-checkbox");
 
   try {
     const res  = await fetch("/api/notes-status");
@@ -79,31 +75,13 @@ async function checkNotesStatus() {
     if (data.available) {
       badge.textContent = `${data.chunk_count} chunks ready`;
       badge.className   = "notes-status-badge available";
-      hint.textContent  =
-        `Your processed notes are ready (${data.chunk_count} chunks from ` +
-        `${data.source_count} source${data.source_count !== 1 ? "s" : ""}). ` +
-        `The quiz will be generated from your notes instead of web searches.`;
     } else {
       badge.textContent = "no notes";
       badge.className   = "notes-status-badge unavailable";
-      box.disabled      = true;
-      hint.textContent  =
-        "No processed notes found. Process your notes first, then check this box.";
     }
   } catch {
     badge.textContent = "unavailable";
     badge.className   = "notes-status-badge unavailable";
-    box.disabled      = true;
-  }
-}
-
-function handleNotesCheckboxChange() {
-  const checked = document.getElementById("use-notes-checkbox").checked;
-  const hint    = document.getElementById("notes-hint");
-  if (checked) {
-    hint.classList.remove("hidden");
-  } else {
-    hint.classList.add("hidden");
   }
 }
 
@@ -117,9 +95,7 @@ function handleFormSubmit(event) {
   const topic        = document.getElementById("topic").value.trim();
   const difficulty   = document.getElementById("difficulty").value;
   const numQuestions = parseInt(document.getElementById("num-questions").value, 10);
-  const useNotes     = document.getElementById("use-notes-checkbox").checked &&
-                       !document.getElementById("use-notes-checkbox").disabled;
-  triggerQuizGeneration(topic, difficulty, numQuestions, useNotes);
+  triggerQuizGeneration(topic, difficulty, numQuestions);
 }
 
 
@@ -130,36 +106,30 @@ function handleFormSubmit(event) {
    subtopic). Resets everything and starts a fresh SSE stream.
    ========================================================================= */
 
-function triggerQuizGeneration(topic, difficulty, numQuestions, useNotes = false) {
+function triggerQuizGeneration(topic, difficulty, numQuestions) {
   state.topic        = topic;
   state.difficulty   = difficulty;
   state.numQuestions = numQuestions;
-  state.useNotes     = useNotes;
   state.searchCount  = 0;
 
-  resetAgentScreen(topic, difficulty, useNotes);
+  resetAgentScreen(topic, difficulty);
   showScreen("agent-screen");
-  openAgentStream(topic, difficulty, numQuestions, useNotes);
+  openAgentStream(topic, difficulty, numQuestions);
 }
 
-function resetAgentScreen(topic, difficulty, useNotes) {
-  const modeLabel = useNotes ? "from your notes on" : "on";
+function resetAgentScreen(topic, difficulty) {
   document.getElementById("agent-topic-label").textContent =
-    `Building a ${difficulty.toLowerCase()} quiz ${modeLabel} "${topic}"`;
+    `Building a ${difficulty.toLowerCase()} quiz on "${topic}"`;
   document.getElementById("agent-status-text").textContent = "Starting...";
   document.getElementById("search-counter").textContent    = "";
 
   const spinner = document.getElementById("agent-spinner");
   spinner.classList.remove("spinner-done");
 
-  const initText = useNotes
-    ? "Agent started. Analyzing your notes..."
-    : "Agent started. Searching the web for resources...";
-
   document.getElementById("agent-log").innerHTML = `
     <div class="log-entry log-info">
       <span class="log-tag">INIT</span>
-      <span class="log-text">${escHtml(initText)}</span>
+      <span class="log-text">Agent started...</span>
     </div>`;
   document.getElementById("agent-log-wrap").classList.add("hidden");
   document.getElementById("log-toggle").textContent = "Show Agent Log";
@@ -175,8 +145,8 @@ function resetAgentScreen(topic, difficulty, useNotes) {
    SSE — agent decision stream
    ========================================================================= */
 
-function openAgentStream(topic, difficulty, numQuestions, useNotes) {
-  const params = new URLSearchParams({ topic, difficulty, numQuestions, useNotes });
+function openAgentStream(topic, difficulty, numQuestions) {
+  const params = new URLSearchParams({ topic, difficulty, numQuestions });
   const source = new EventSource(`/api/quiz-stream?${params}`);
 
   source.onmessage = (e) => {
@@ -670,9 +640,7 @@ function showResults() {
         triggerQuizGeneration(
           `${concept} (within ${state.topic})`,
           state.difficulty,
-          state.numQuestions,
-          // subtopic drills always use search mode so web context broadens the scope
-          false
+          state.numQuestions
         );
       });
     });
@@ -725,12 +693,70 @@ function initPanelToggles() {
    Boot
    ========================================================================= */
 
+async function uploadNotes(kind, inputId, statusId) {
+  const input  = document.getElementById(inputId);
+  const status = document.getElementById(statusId);
+
+  if (!input.files || input.files.length === 0) {
+    status.textContent = "Choose at least one file first.";
+    status.className   = "upload-status error";
+    return;
+  }
+
+  const form = new FormData();
+  form.append("kind", kind);
+  for (const f of input.files) form.append("files", f);
+
+  status.textContent = kind === "handwritten"
+    ? "Uploading and running vision pipeline (this can take a minute)..."
+    : "Uploading and processing...";
+  status.className   = "upload-status";
+
+  try {
+    const res  = await fetch("/api/upload-notes", { method: "POST", body: form });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Upload failed");
+
+    const parts = [];
+    if (data.saved.length)   parts.push(`Saved ${data.saved.length} file(s)`);
+    if (data.skipped.length) parts.push(`skipped ${data.skipped.length}`);
+
+    if (data.processed) {
+      if (kind === "digital") {
+        parts.push(`processed ${data.processed.pages} page(s)`);
+      } else {
+        parts.push(
+          `processed ${data.processed.files} file(s), ` +
+          `${data.processed.pages} page(s), ${data.processed.chunks} chunk(s)`
+        );
+      }
+    }
+    if (data.process_error) {
+      parts.push(`processing failed: ${data.process_error}`);
+    }
+
+    status.textContent = parts.join(" — ") || "Nothing uploaded.";
+    const success = data.saved.length && !data.process_error;
+    status.className   = `upload-status ${success ? "success" : "error"}`;
+    input.value        = "";
+
+    if (success) checkNotesStatus();
+  } catch (err) {
+    status.textContent = err.message;
+    status.className   = "upload-status error";
+  }
+}
+
 function init() {
   checkNotesStatus();
 
-  document.getElementById("use-notes-checkbox").addEventListener(
-    "change", handleNotesCheckboxChange
-  );
+  document.getElementById("digital-upload-btn").addEventListener("click", () => {
+    uploadNotes("digital", "digital-notes-input", "digital-upload-status");
+  });
+
+  document.getElementById("handwritten-upload-btn").addEventListener("click", () => {
+    uploadNotes("handwritten", "handwritten-notes-input", "handwritten-upload-status");
+  });
 
   document.getElementById("quiz-form").addEventListener("submit", handleFormSubmit);
 
@@ -741,11 +767,11 @@ function init() {
   document.getElementById("harder-btn").addEventListener("click", () => {
     const order   = ["Beginner", "Intermediate", "Advanced"];
     const nextIdx = Math.min(order.indexOf(state.difficulty) + 1, order.length - 1);
-    triggerQuizGeneration(state.topic, order[nextIdx], state.numQuestions, state.useNotes);
+    triggerQuizGeneration(state.topic, order[nextIdx], state.numQuestions);
   });
 
   document.getElementById("similar-btn").addEventListener("click", () => {
-    triggerQuizGeneration(state.topic, state.difficulty, state.numQuestions, state.useNotes);
+    triggerQuizGeneration(state.topic, state.difficulty, state.numQuestions);
   });
 
   document.getElementById("new-topic-btn").addEventListener("click", () => {
