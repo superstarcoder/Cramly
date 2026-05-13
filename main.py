@@ -34,7 +34,7 @@ from flask_cors import CORS
 
 from src.generate_quiz import QuizGenerator
 from src.generate_study_guide import generate_study_guide
-from src.utils import load_chunks, load_sources, chunks_to_text
+from src.utils import load_all_note_chunks, chunks_to_sources, chunks_to_text
 
 load_dotenv()
 
@@ -125,14 +125,14 @@ def quiz_stream():
     notes_text = None
     sources    = None
     if use_notes:
-        chunks = load_chunks()
+        chunks = load_all_note_chunks()
         if not chunks:
             return _sse_error(
                 "No processed notes found. "
                 "Run the notes pipeline first, then try again."
             )
         notes_text = chunks_to_text(chunks)
-        sources    = load_sources()
+        sources    = chunks_to_sources(chunks)
 
     def event_stream():
         for event in generator.generate_quiz_stream(
@@ -177,13 +177,13 @@ def generate_quiz():
     notes_text = None
     sources    = None
     if use_notes:
-        chunks = load_chunks()
+        chunks = load_all_note_chunks()
         if not chunks:
             return jsonify({
                 "error": "No processed notes found. Run the notes pipeline first."
             }), 400
         notes_text = chunks_to_text(chunks)
-        sources    = load_sources()
+        sources    = chunks_to_sources(chunks)
 
     try:
         quiz = generator.generate_quiz(topic, difficulty, num_questions, notes_text, sources)
@@ -232,12 +232,14 @@ def notes_status():
     Response (JSON):
         {"available": bool, "chunk_count": int, "source_count": int}
     """
-    chunks  = load_chunks()
-    sources = load_sources()
+    chunks = load_all_note_chunks()
     return jsonify({
         "available":    len(chunks) > 0,
         "chunk_count":  len(chunks),
-        "source_count": len(sources),
+        "source_count": len(set(
+            (c.get("citation", {}).get("source_file") or c.get("source_file") or c.get("source", ""))
+            for c in chunks
+        )),
     })
 
 
