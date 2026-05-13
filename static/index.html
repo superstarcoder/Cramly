@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cramly — Choose a Study Mode</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .menu-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 1.25rem;
+      gap: 2.5rem;
+    }
+    .menu-hero {
+      text-align: center;
+      max-width: 640px;
+    }
+    .menu-hero h1 {
+      font-family: "Fraunces", Georgia, serif;
+      font-size: 3.25rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: var(--grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.75rem;
+    }
+    .menu-hero p {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      line-height: 1.55;
+    }
+    .menu-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      width: 100%;
+      max-width: 760px;
+    }
+    @media (max-width: 640px) {
+      .menu-grid { grid-template-columns: 1fr; }
+      .menu-hero h1 { font-size: 2.2rem; }
+    }
+    .menu-tile {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      padding: 2rem 1.75rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+    .menu-tile::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: var(--accent-soft);
+      opacity: 0;
+      transition: opacity var(--transition);
+      pointer-events: none;
+    }
+    .menu-tile:hover {
+      transform: translateY(-3px);
+      border-color: var(--accent);
+      box-shadow: 0 12px 32px rgba(111, 66, 193, 0.18);
+      text-decoration: none;
+    }
+    .menu-tile:hover::before { opacity: 0.55; }
+    .menu-tile > * { position: relative; z-index: 1; }
+    .menu-icon {
+      width: 46px;
+      height: 46px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--accent-soft);
+      color: var(--accent);
+      border-radius: var(--radius-sm);
+      font-family: "Fraunces", Georgia, serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+    }
+    .menu-tile h2 {
+      font-family: "Fraunces", Georgia, serif;
+      font-size: 1.45rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    .menu-tile p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.5;
+      flex: 1;
+    }
+    .menu-tile .arrow {
+      color: var(--accent);
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="menu-wrap">
+      <div class="menu-hero">
+        <h1>Cramly</h1>
+        <p>AI study tools built from real resources. Choose how you'd like to study.</p>
+      </div>
+
+      <div class="menu-grid">
+        <a class="menu-tile" href="/quiz.html">
+          <div class="menu-icon">?</div>
+          <h2>Quiz</h2>
+          <p>Generate an interactive quiz from the web or from your own notes. Multiple choice, true/false, and short-answer questions.</p>
+          <div class="arrow">Start a quiz →</div>
+        </a>
+
+        <a class="menu-tile" href="/study_guide.html">
+          <div class="menu-icon">§</div>
+          <h2>Study Guide</h2>
+          <p>View a dense, exam-prep cheat sheet with formulas, key terms, worked examples, and quick-check questions.</p>
+          <div class="arrow">Open study guide →</div>
+        </a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

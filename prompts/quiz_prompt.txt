@@ -1,0 +1,61 @@
+Create a comprehensive study quiz on: **<<topic>>**
+
+The following study notes have been provided by the student:
+
+--- NOTES BEGIN ---
+<<notes_text>>
+--- NOTES END ---
+
+Generate exactly <<num_questions>> questions at **<<difficulty>>** difficulty based ONLY on the content in the notes above.
+Aim for this distribution:
+  • ~<<num_mc>> multiple choice  (test specific knowledge from the notes)
+  • ~<<num_tf>> true / false     (address concepts or common misconceptions found in the notes)
+  • ~<<num_sa>> short answer     (require explanation of concepts covered in the notes)
+
+Document your reasoning: identify the key concepts in the notes and explain your question design choices.
+
+Return ONLY a valid JSON object with NO surrounding markdown.
+Schema (null for fields that don't apply to a question type):
+
+{
+  "topic": "<<topic>>",
+  "difficulty": "<<difficulty>>",
+  "reasoning": {
+    "search_strategy": "Describe the key topics and themes you found in the student's notes",
+    "key_concepts": ["concept1", "concept2", "...up to 8 key concepts identified from the notes"],
+    "question_rationale": "Explain how you decided on question types and what each tests for this material"
+  },
+  "sources": [],
+  "questions": [
+    {
+      "id": 1,
+      "type": "multiple_choice",
+      "question": "...",
+      "options": {"A": "...", "B": "...", "C": "...", "D": "..."},
+      "correct": "A",
+      "model_answer": null,
+      "key_points": null,
+      "explanation": "..."
+    },
+    {
+      "id": 2,
+      "type": "true_false",
+      "question": "...",
+      "options": null,
+      "correct": "True",
+      "model_answer": null,
+      "key_points": null,
+      "explanation": "..."
+    },
+    {
+      "id": 3,
+      "type": "short_answer",
+      "question": "...",
+      "options": null,
+      "correct": null,
+      "model_answer": "A complete model answer goes here.",
+      "key_points": ["key point 1", "key point 2"],
+      "explanation": "..."
+    }
+  ]
+}

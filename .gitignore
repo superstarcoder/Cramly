@@ -1,0 +1,35 @@
+# ── Secrets ───────────────────────────────────────────────────────────────────
+.env
+.env.*
+# Keep the example template; never commit the real secret file
+!.env.example
+
+# ── Python ────────────────────────────────────────────────────────────────────
+venv/
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+
+# ── Notes pipeline data ───────────────────────────────────────────────────────
+# Raw uploads and processed output are machine-generated or user-private.
+# Keep the empty placeholder files so the directory structure is cloned.
+notes/raw/*
+notes/processed/chunks.json
+notes/processed/sources.json
+notes/outputs/*
+!notes/raw/.gitkeep
+!notes/processed/.gitkeep
+!notes/outputs/.gitkeep
+
+# ── OS / editor noise ─────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/

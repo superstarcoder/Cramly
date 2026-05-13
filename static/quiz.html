@@ -1,0 +1,275 @@
+<!--
+  index.html
+  ==========
+  Abstract:
+    Single-page application shell for Cramly's interactive quiz. Four screens
+    are toggled by quiz.js via the .active CSS class:
+
+      1. input-screen  — topic form with optional "Use Notes" toggle
+      2. agent-screen  — minimal progress view; agent log is hidden by default
+                         and revealed with "Show Agent Log"; reasoning summary
+                         appears when the quiz is ready
+      3. quiz-screen   — one question at a time; collapsible "Agent Reasoning"
+                         side panel; sources toggle
+      4. results-screen — score, missed-question review, and "what's next"
+                         options: harder questions, similar questions, new topic,
+                         and a subtopic grid for diving deeper
+
+  Notes toggle:
+    The "Use Notes" checkbox signals the backend to read from
+    notes/processed/chunks.json instead of running web searches.
+    The file upload / note processing UI is handled by the notes pipeline
+    (groupmate's steps 4–6); this screen just exposes the toggle.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cramly — AI Study Quiz</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .quiz-back-link {
+      position: fixed;
+      top: 1rem;
+      left: 1.25rem;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      text-decoration: none;
+      z-index: 100;
+      padding: 0.4rem 0.7rem;
+      border-radius: var(--radius-sm);
+      transition: color var(--transition), background var(--transition);
+    }
+    .quiz-back-link:hover {
+      color: var(--accent);
+      background: var(--surface);
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+<a href="/" class="quiz-back-link">← Back to menu</a>
+<div id="app">
+
+  <!-- ================================================================
+       SCREEN 1: Input
+  ================================================================ -->
+  <section id="input-screen" class="screen active">
+    <div class="card center-card">
+      <div class="logo">
+        <h1>Cramly</h1>
+        <p class="tagline">AI study quizzes and study guides built from real resources</p>
+      </div>
+
+      <form id="quiz-form">
+        <div class="field">
+          <label for="topic">What do you want to study?</label>
+          <input
+            type="text" id="topic"
+            placeholder="e.g. Time Series Analysis, Binary Trees, Thermodynamics..."
+            autocomplete="off" required
+          />
+        </div>
+
+        <div class="options-row">
+          <div class="field">
+            <label for="difficulty">Difficulty</label>
+            <select id="difficulty">
+              <option value="Beginner">Beginner</option>
+              <option value="Intermediate" selected>Intermediate</option>
+              <option value="Advanced">Advanced</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="num-questions">Questions</label>
+            <select id="num-questions">
+              <option value="5">5</option>
+              <option value="10" selected>10</option>
+              <option value="15">15</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Notes toggle — groupmate adds file upload UI inside this section -->
+        <div class="notes-section">
+          <div class="notes-toggle-row">
+            <label class="toggle-label" for="use-notes-checkbox">
+              <input type="checkbox" id="use-notes-checkbox" />
+              Use my notes
+            </label>
+            <span id="notes-status-badge" class="notes-status-badge">checking...</span>
+          </div>
+          <p id="notes-hint" class="notes-hint text-muted hidden"></p>
+
+          <!--
+            TODO (groupmate — steps 4-6):
+            Add your note upload and processing UI here.
+            After processing, save output to:
+              notes/processed/chunks.json   (chunked text)
+              notes/processed/sources.json  (source metadata)
+            The quiz backend reads these files when "Use Notes" is checked.
+          -->
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full">Generate Quiz</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ================================================================
+       SCREEN 2: Agent screen
+       Default: clean spinner + status text. The detailed terminal log
+       and the reasoning summary are both opt-in via toggle buttons.
+  ================================================================ -->
+  <section id="agent-screen" class="screen">
+    <div class="card agent-card">
+
+      <!-- Minimal progress view (always visible) -->
+      <div class="agent-simple">
+        <div class="spinner" id="agent-spinner"></div>
+        <h2 id="agent-topic-label"></h2>
+        <p id="agent-status-text" class="text-muted">Starting...</p>
+        <p id="search-counter" class="search-counter"></p>
+      </div>
+
+      <!-- Toggle: show/hide the detailed terminal log -->
+      <button class="panel-toggle" id="log-toggle">Show Agent Log</button>
+
+      <!-- Detailed terminal log — hidden by default -->
+      <div id="agent-log-wrap" class="agent-log-wrap hidden">
+        <div class="agent-log-header">
+          <span class="dot dot-red"></span>
+          <span class="dot dot-yellow"></span>
+          <span class="dot dot-green"></span>
+          <span class="agent-log-title">Agent Decision Log</span>
+        </div>
+        <div id="agent-log" class="agent-log">
+          <div class="log-entry log-info">
+            <span class="log-tag">INIT</span>
+            <span class="log-text">Agent started...</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reasoning summary — hidden until quiz is ready; opt-in toggle -->
+      <div id="reasoning-wrap" class="hidden">
+        <button class="panel-toggle" id="reasoning-summary-toggle">Show Agent Reasoning</button>
+        <div id="reasoning-box" class="reasoning-box hidden">
+          <div class="reasoning-title">Why the agent made these choices</div>
+          <div class="reasoning-section">
+            <div class="reasoning-label">Search Strategy</div>
+            <p id="reasoning-strategy"></p>
+          </div>
+          <div class="reasoning-section">
+            <div class="reasoning-label">Key Concepts Identified</div>
+            <ul id="reasoning-concepts"></ul>
+          </div>
+          <div class="reasoning-section">
+            <div class="reasoning-label">Question Design Rationale</div>
+            <p id="reasoning-rationale"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Appears once the quiz is ready -->
+      <div id="agent-actions" class="agent-actions hidden">
+        <button class="btn btn-primary" id="start-quiz-btn">Start Quiz</button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================================================================
+       SCREEN 3: Quiz
+       One question at a time. Agent Reasoning panel is opt-in.
+  ================================================================ -->
+  <section id="quiz-screen" class="screen">
+
+    <header class="quiz-header">
+      <div class="header-left">
+        <span id="question-counter" class="question-counter">Question 1 of 10</span>
+        <span id="score-counter" class="score-badge">Score: 0</span>
+      </div>
+      <div class="progress-bar-wrap">
+        <div id="progress-bar" class="progress-bar"></div>
+      </div>
+    </header>
+
+    <div class="quiz-body">
+      <main class="quiz-main">
+        <div id="question-card" class="card question-card">
+          <!-- Populated by quiz.js renderQuestion() -->
+        </div>
+
+        <div class="sources-panel">
+          <button class="panel-toggle" id="sources-toggle">View Sources</button>
+          <div id="sources-list" class="sources-list hidden"></div>
+        </div>
+      </main>
+
+      <!-- Agent reasoning side panel — opt-in via toggle below -->
+      <aside id="reasoning-panel" class="reasoning-side-panel hidden">
+        <div class="side-panel-title">Agent Reasoning</div>
+        <div class="side-section">
+          <div class="side-label">Search Strategy</div>
+          <p id="side-strategy" class="side-text"></p>
+        </div>
+        <div class="side-section">
+          <div class="side-label">Key Concepts</div>
+          <ul id="side-concepts" class="side-concepts"></ul>
+        </div>
+        <div class="side-section">
+          <div class="side-label">Question Rationale</div>
+          <p id="side-rationale" class="side-text"></p>
+        </div>
+      </aside>
+    </div>
+
+    <div class="reasoning-toggle-row">
+      <button class="panel-toggle" id="reasoning-toggle">Show Agent Reasoning</button>
+    </div>
+
+  </section>
+
+  <!-- ================================================================
+       SCREEN 4: Results
+       Score + missed questions + post-quiz action options.
+  ================================================================ -->
+  <section id="results-screen" class="screen">
+    <div class="card results-card">
+      <h2>Quiz Complete!</h2>
+
+      <div id="score-display" class="score-display"></div>
+
+      <!-- Missed questions (collapsible) -->
+      <div id="missed-section" class="missed-section hidden">
+        <button class="panel-toggle" id="missed-toggle">Show Missed Questions</button>
+        <div id="missed-review" class="missed-review hidden"></div>
+      </div>
+
+      <!-- What's next -->
+      <div class="next-section">
+        <h3 class="next-title">What would you like to do next?</h3>
+        <div class="next-actions">
+          <button class="btn btn-secondary" id="harder-btn">Try Harder Questions</button>
+          <button class="btn btn-secondary" id="similar-btn">More Similar Questions</button>
+          <button class="btn btn-primary"   id="new-topic-btn">New Topic</button>
+        </div>
+        <button class="btn-link" id="retake-btn">Retake exact same quiz</button>
+      </div>
+
+      <!-- Subtopic exploration — populated from quiz.reasoning.key_concepts -->
+      <div id="subtopic-section" class="subtopic-section hidden">
+        <h3 class="next-title">Dive Deeper into a Subtopic</h3>
+        <p class="text-muted">Start a focused quiz on one of these areas:</p>
+        <div id="subtopic-grid" class="subtopic-grid"></div>
+      </div>
+
+    </div>
+  </section>
+
+</div><!-- /#app -->
+<script src="quiz.js"></script>
+</body>
+</html>
