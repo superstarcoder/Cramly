@@ -1,0 +1,61 @@
+Create a comprehensive study quiz on: **<<topic>>**
+
+Step 1 — Search for learning resources. Run at least these four searches:
+  • "<<topic>> key concepts textbook summary"
+  • "<<topic>> quizlet study cards"
+  • "<<topic>> technical interview questions answers"
+  • "<<topic>> common exam practice problems"
+
+Step 2 — Generate exactly <<num_questions>> questions at **<<difficulty>>** difficulty.
+Aim for this distribution:
+  • ~<<num_mc>> multiple choice  (test specific knowledge)
+  • ~<<num_tf>> true / false     (address common misconceptions)
+  • ~<<num_sa>> short answer     (require deeper explanation)
+
+Step 3 — Return ONLY a valid JSON object with NO surrounding markdown.
+Schema (null for fields that don't apply to a question type):
+
+{
+  "topic": "<<topic>>",
+  "difficulty": "<<difficulty>>",
+  "reasoning": {
+    "search_strategy": "Explain what you searched for and why each query was chosen",
+    "key_concepts": ["concept1", "concept2", "...up to 8 concepts identified from sources"],
+    "question_rationale": "Explain how you decided on question types and what each type tests for this topic"
+  },
+  "sources": [
+    {"title": "...", "url": "...", "type": "textbook|quizlet|online|interview"}
+  ],
+  "questions": [
+    {
+      "id": 1,
+      "type": "multiple_choice",
+      "question": "...",
+      "options": {"A": "...", "B": "...", "C": "...", "D": "..."},
+      "correct": "A",
+      "model_answer": null,
+      "key_points": null,
+      "explanation": "..."
+    },
+    {
+      "id": 2,
+      "type": "true_false",
+      "question": "...",
+      "options": null,
+      "correct": "True",
+      "model_answer": null,
+      "key_points": null,
+      "explanation": "..."
+    },
+    {
+      "id": 3,
+      "type": "short_answer",
+      "question": "...",
+      "options": null,
+      "correct": null,
+      "model_answer": "A complete model answer goes here.",
+      "key_points": ["key point 1", "key point 2"],
+      "explanation": "..."
+    }
+  ]
+}
