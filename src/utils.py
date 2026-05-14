@@ -10,6 +10,7 @@ MAX_NOTES_CHARS        = 50_000
 
 _REGULAR_CHUNKS_PATH     = PROCESSED_DIR     / "chunks.json"
 _HANDWRITTEN_CHUNKS_PATH = HW_PROCESSED_DIR  / "handwritten_chunks.json"
+_EXTERNAL_CHUNKS_PATH    = PROCESSED_DIR     / "external_chunks.json"
 
 
 def load_chunks(processed_dir: Path = PROCESSED_DIR) -> list[dict]:
@@ -45,19 +46,21 @@ def load_sources(processed_dir: Path = PROCESSED_DIR) -> list[dict]:
 def load_all_note_chunks(
     regular_chunks_path: Path = _REGULAR_CHUNKS_PATH,
     handwritten_chunks_path: Path = _HANDWRITTEN_CHUNKS_PATH,
+    external_chunks_path: Path = _EXTERNAL_CHUNKS_PATH,
 ) -> list[dict]:
     """
-    Load and combine regular chunks and handwritten chunks into one list.
+    Load and combine regular, handwritten, and MCP-researched external chunks.
 
-    Stamps each chunk with "chunk_type": "regular" or "handwritten" if missing.
+    Stamps each chunk with "chunk_type" if missing.
     Silently skips files that are missing or contain invalid JSON.
-    Returns [] if neither file is found.
+    Returns [] if no files are found.
     """
     all_chunks = []
 
     for path, chunk_type in [
         (Path(regular_chunks_path),     "regular"),
         (Path(handwritten_chunks_path), "handwritten"),
+        (Path(external_chunks_path),    "external"),
     ]:
         if not path.exists():
             continue
@@ -88,22 +91,48 @@ def chunks_to_sources(chunks: list[dict]) -> list[dict]:
     seen: set[tuple] = set()
     sources = []
     for c in chunks:
-        if c.get("chunk_type") == "handwritten":
+        chunk_type = c.get("chunk_type")
+        if chunk_type == "handwritten":
             title = (c.get("citation") or {}).get("source_file") or c.get("source_file", "Unknown")
             kind  = "handwritten"
+            url   = ""
+        elif chunk_type == "external":
+            title = c.get("title") or (c.get("citation") or {}).get("title") or "Web Source"
+            kind  = "web"
+            url   = c.get("url") or (c.get("citation") or {}).get("url") or ""
         else:
             title = c.get("source") or c.get("source_file", "Unknown")
             kind  = c.get("source_type", "notes")
+            url   = ""
 
         key = (title, kind)
         if key not in seen:
             seen.add(key)
-            sources.append({"title": title, "type": kind, "url": ""})
+            sources.append({"title": title, "type": kind, "url": url})
 
     return sources
 
 
 def chunks_to_text(chunks: list[dict], max_chars: int = MAX_NOTES_CHARS) -> str:
-    """Concatenate chunk texts into a single string, truncated to max_chars."""
-    text = "\n\n".join(c.get("text", "") for c in chunks)
-    return text[:max_chars] if len(text) > max_chars else text
+    """
+    Concatenate chunk texts with a 70/30 budget split between student notes
+    and external web references.
+
+    Labeled sections let the LLM know which source takes priority.
+    """
+    notes_chunks = [c for c in chunks if c.get("chunk_type") != "external"]
+    web_chunks   = [c for c in chunks if c.get("chunk_type") == "external"]
+
+    notes_budget = int(max_chars * 0.70)
+    web_budget   = int(max_chars * 0.30)
+
+    notes_text = "\n\n".join(c.get("text", "") for c in notes_chunks)[:notes_budget]
+    web_text   = "\n\n".join(c.get("text", "") for c in web_chunks)[:web_budget]
+
+    parts = []
+    if notes_text.strip():
+        parts.append(f"[STUDENT NOTES — primary source]\n{notes_text}")
+    if web_text.strip():
+        parts.append(f"[EXTERNAL REFERENCES — supplementary only]\n{web_text}")
+
+    return "\n\n".join(parts)

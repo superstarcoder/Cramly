@@ -32,6 +32,7 @@ from src.generate_quiz import QuizGenerator
 from src.generate_study_guide import generate_study_guide
 from src.handwritten_ingest import process_handwritten_notes
 from src.ingest import ingest_notes
+from src.mcp_research import research_with_mcp
 from src.utils import load_all_note_chunks, chunks_to_sources, chunks_to_text
 
 load_dotenv()
@@ -91,8 +92,11 @@ def generate_study_guide_endpoint():
             "error": "grade_level, major_or_class_level, and topic are all required."
         }), 400
 
-    # If the user didn't paste notes, fall back to whatever's in the processed
-    # notes pipeline (digital + handwritten chunks).
+    # Run MCP web research to enrich context (skips silently if TAVILY_API_KEY unset).
+    if os.getenv("TAVILY_API_KEY"):
+        research_with_mcp(topic, grade_level=grade_level, major=major_or_class_level)
+
+    # If the user didn't paste notes, fall back to processed + external chunks.
     if not notes:
         chunks = load_all_note_chunks()
         if chunks:
@@ -128,14 +132,18 @@ def quiz_stream():
     if not topic:
         return _sse_error("Topic is required.")
 
-    notes_text = None
-    sources    = None
-    chunks = load_all_note_chunks()
-    if chunks:
-        notes_text = chunks_to_text(chunks)
-        sources    = chunks_to_sources(chunks)
-
     def event_stream():
+        # Run MCP web research before building the quiz context.
+        if os.getenv("TAVILY_API_KEY"):
+            msg_start = f'Enriching with web research on "{topic}"...'
+            yield f"data: {json.dumps({'type': 'mcp_research', 'message': msg_start})}\n\n"
+            research_with_mcp(topic)
+            yield f"data: {json.dumps({'type': 'mcp_research', 'message': 'Web research complete — sources added.'})}\n\n"
+
+        chunks = load_all_note_chunks()
+        notes_text = chunks_to_text(chunks) if chunks else None
+        sources    = chunks_to_sources(chunks) if chunks else None
+
         for event in generator.generate_quiz_stream(
             topic, difficulty, num_questions, notes_text, sources
         ):
@@ -175,12 +183,12 @@ def generate_quiz():
     if not topic:
         return jsonify({"error": "A topic is required."}), 400
 
-    notes_text = None
-    sources    = None
+    if os.getenv("TAVILY_API_KEY"):
+        research_with_mcp(topic)
+
     chunks = load_all_note_chunks()
-    if chunks:
-        notes_text = chunks_to_text(chunks)
-        sources    = chunks_to_sources(chunks)
+    notes_text = chunks_to_text(chunks) if chunks else None
+    sources    = chunks_to_sources(chunks) if chunks else None
 
     try:
         quiz = generator.generate_quiz(topic, difficulty, num_questions, notes_text, sources)

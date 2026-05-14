@@ -165,6 +165,11 @@ function openAgentStream(topic, difficulty, numQuestions) {
 function handleAgentEvent(event, source) {
   switch (event.type) {
 
+    case "mcp_research":
+      document.getElementById("agent-status-text").textContent = event.message;
+      appendLogEntry("pending", "MCP", event.message);
+      break;
+
     case "notes_loaded":
       document.getElementById("agent-status-text").textContent =
         "Analyzing your notes...";

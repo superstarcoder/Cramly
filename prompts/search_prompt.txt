@@ -14,6 +14,8 @@ Aim for this distribution:
 
 Step 3 — Return ONLY a valid JSON object with NO surrounding markdown.
 
+SOURCES: The context may contain two labeled sections — [STUDENT NOTES — primary source] and [EXTERNAL REFERENCES — supplementary only]. Treat student notes as the primary source for all questions. Use external references only to add worked examples, clarify concepts, or fill explicit gaps. Never let external content override or contradict the student's notes.
+
 MATH FORMATTING: Whenever a question, option, step, or explanation contains mathematical expressions — formulas, Greek letters, subscripts, superscripts, integrals, fractions, sums, matrices, symbols, etc. — write them in LaTeX enclosed in dollar signs:
   • Inline: $E(X) = \int_{-\infty}^{\infty} x\, f_X(x)\,dx$
   • Display: $$\sum_{i=1}^{n} i = \frac{n(n+1)}{2}$$

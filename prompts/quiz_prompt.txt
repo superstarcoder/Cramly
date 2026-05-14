@@ -6,7 +6,7 @@ The following study notes have been provided by the student:
 <<notes_text>>
 --- NOTES END ---
 
-Generate exactly <<num_questions>> questions at **<<difficulty>>** difficulty based ONLY on the content in the notes above.
+Generate exactly <<num_questions>> questions at **<<difficulty>>** difficulty based on the content provided above.
 For all of the quiz questions, have them be similar to the notes but not exactly the same question. Numbers in math and science problems should vary. 
 Aim for this distribution:
   • ~<<num_mc>> multiple choice  (test specific knowledge from the notes)
@@ -16,6 +16,8 @@ Aim for this distribution:
 Document your reasoning: identify the key concepts in the notes and explain your question design choices.
 
 Return ONLY a valid JSON object with NO surrounding markdown.
+
+SOURCES: The notes may contain two labeled sections — [STUDENT NOTES — primary source] and [EXTERNAL REFERENCES — supplementary only]. Treat student notes as the primary source for all questions. Use external references only to add worked examples, clarify concepts, or fill explicit gaps. Never let external content override or contradict the student's notes.
 
 MATH FORMATTING: Whenever a question, option, step, or explanation contains mathematical expressions — formulas, Greek letters, subscripts, superscripts, integrals, fractions, sums, matrices, symbols, etc. — write them in LaTeX enclosed in dollar signs:
   • Inline: $E(X) = \int_{-\infty}^{\infty} x\, f_X(x)\,dx$

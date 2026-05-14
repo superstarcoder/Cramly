@@ -14,5 +14,6 @@ dependencies = [
     "python-docx>=1.1.0",    # DOCX parsing
     "pytesseract>=0.3.10",   # OCR wrapper (also: brew install tesseract)
     "pillow>=10.0.0",        # image loading for OCR
-    "tavily-python>=0.7.0",  # Tavily search for MCP research layer
+    "tavily-python>=0.7.0",  # kept as fallback; primary path uses MCP client
+    "mcp>=1.0.0",            # MCP client — connects to Tavily MCP server via npx
 ]
