@@ -49,6 +49,10 @@ source venv/bin/activate      # Mac / Linux
 ```bash
 pip install -e .
 ```
+or 
+```bash
+pip install -r requirements.txt
+```
 
 This pulls in everything from `pyproject.toml`: Flask, flask-cors,
 python-dotenv, openai, duckduckgo-search, PyMuPDF, python-docx,
@@ -473,11 +477,13 @@ Counts come from the combined digital + handwritten chunks.
 
 ## Written Analysis
 
-Cramly was designed around the idea of turning AI into a personal learning assistant rather than just a question-answering tool. The main motivation was to help students actively study from their own material instead of passively reading notes. By leveraging the ability of large language models to understand and process long-form text, the system transforms raw lecture notes into structured outputs like quizzes and study guides. This makes studying more interactive and helps students focus on the most important ideas in their own coursework.
+Cramly is an AI study tool that turns a student’s own class material into quizzes and study guides. We realized that students already use AI to study, but most of the time they have to manually explain the class, paste notes, and ask the right prompts to get useful output. We wanted to make that process more automatic.
 
-A key goal was personalization. Instead of relying on generic educational content, the system uses the student’s own notes as the primary source of truth. This means the generated quizzes and study guides naturally reflect their class topics, terminology, and emphasis. The idea was that learning becomes more effective when the material feels familiar and directly tied to what was taught in class. The system also supports different learning styles by combining recall-based quizzes with structured summaries, giving students multiple ways to engage with the same content.
+The main goal was to take whatever material a student already has like typed notes, PDFs, review sheets, or handwritten math work and turn it into something they can actually study from. Instead of only giving a generic explanation of a topic, Cramly reads the uploaded material, breaks it into chunks, adds outside context using Tavily research, and then generates a quiz or study guide based on that combined context.
 
-From a design perspective, several decisions were made to support this experience. One major choice was to build a shared notes pipeline that both quizzes and study guides rely on, ensuring consistency and avoiding duplicated processing logic. Another was to support both digital and handwritten uploads, since real student input is often messy and not purely typed. Handwritten support introduced complexity, but it significantly improved usability. We also chose to process notes automatically upon upload so users could immediately start studying without extra setup steps, prioritizing simplicity over background optimization. Finally, we structured the system so it always falls back to either notes-based generation or web-based generation, ensuring the tool is always usable even without uploads.
+A big design decision was separating the note processing pipelines. Typed notes are handled with normal text extraction and chunking, while handwritten or math heavy notes use GPT-4o Vision because regular OCR struggles with graphs, equations, and worked-out problems. After both pipelines run, the chunks are merged together so the quiz and study guide generators can use all of the student’s material in one place.
+
+We also added Tavily through an MCP research pipeline to make the output stronger. Before generation, the system can search for relevant sources, extract useful web content, and save that as additional chunks. This means the LLM is not only relying on its general knowledge, it can use the student’s notes, handwritten work, and external context available to make a tailored study quide or quiz.
 
 Challenges & Limitations
 **Dependence on note quality and structure**
