@@ -468,3 +468,23 @@ Counts come from the combined digital + handwritten chunks.
   guide form is now an optional override. If you paste anything, it wins.
   If you leave it blank, the backend auto-loads whatever's in the processed
   notes pipeline.
+
+---
+
+## Written Analysis
+
+Cramly was designed around the idea of turning AI into a personal learning assistant rather than just a question-answering tool. The main motivation was to help students actively study from their own material instead of passively reading notes. By leveraging the ability of large language models to understand and process long-form text, the system transforms raw lecture notes into structured outputs like quizzes and study guides. This makes studying more interactive and helps students focus on the most important ideas in their own coursework.
+
+A key goal was personalization. Instead of relying on generic educational content, the system uses the student’s own notes as the primary source of truth. This means the generated quizzes and study guides naturally reflect their class topics, terminology, and emphasis. The idea was that learning becomes more effective when the material feels familiar and directly tied to what was taught in class. The system also supports different learning styles by combining recall-based quizzes with structured summaries, giving students multiple ways to engage with the same content.
+
+From a design perspective, several decisions were made to support this experience. One major choice was to build a shared notes pipeline that both quizzes and study guides rely on, ensuring consistency and avoiding duplicated processing logic. Another was to support both digital and handwritten uploads, since real student input is often messy and not purely typed. Handwritten support introduced complexity, but it significantly improved usability. We also chose to process notes automatically upon upload so users could immediately start studying without extra setup steps, prioritizing simplicity over background optimization. Finally, we structured the system so it always falls back to either notes-based generation or web-based generation, ensuring the tool is always usable even without uploads.
+
+Challenges & Limitations
+**Dependence on note quality and structure**
+- The system is highly influenced by the quality of uploaded notes. Well-organized lecture notes produce strong and focused study material, but messy handwriting, incomplete slides, or unclear scans can lead to missing or less accurate concepts being reflected in quizzes or summaries.
+**Processing time for large or handwritten uploads**
+- While the system aims for immediacy, large PDFs or handwritten documents can introduce noticeable delays because they need to be fully processed before they can be used. This tradeoff was made to ensure accuracy, but it can affect responsiveness for heavier workloads.
+**Limited understanding across multiple uploads**
+- Each upload is treated independently, meaning the system does not yet build a long-term learning memory across different sessions or subjects. As a result, personalization is strong within a single session, but not fully continuous over time.
+**Reduced effectiveness for highly visual subjects**
+- The system is strongest with text-based learning. Subjects that rely heavily on diagrams, graphs, or spatial reasoning are not always captured well through text extraction alone, which can limit how complete the generated study material feels.
