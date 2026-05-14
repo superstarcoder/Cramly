@@ -7,8 +7,7 @@
 
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
   <style>
@@ -420,27 +419,6 @@
   <script>
     // ---- Markdown setup --------------------------------------------------
     marked.setOptions({ gfm: true, breaks: false });
-    const mathBlock = {
-      name: "mathBlock",
-      level: "block",
-      start(src) { return src.indexOf("$$"); },
-      tokenizer(src) {
-        const match = /^\$\$([\s\S]+?)\$\$/.exec(src);
-        if (match) return { type: "mathBlock", raw: match[0], text: match[1] };
-      },
-      renderer(token) { return `$$${token.text}$$`; },
-    };
-    const mathInline = {
-      name: "mathInline",
-      level: "inline",
-      start(src) { return src.indexOf("$"); },
-      tokenizer(src) {
-        const match = /^\$(?!\s)([^\$\n]+?)(?<!\s)\$/.exec(src);
-        if (match) return { type: "mathInline", raw: match[0], text: match[1] };
-      },
-      renderer(token) { return `$${token.text}$`; },
-    };
-    marked.use({ extensions: [mathBlock, mathInline] });
 
     // ---- Screen switching ------------------------------------------------
     const screens = {
@@ -464,18 +442,33 @@
     // ---- Render markdown into display screen -----------------------------
     function renderMarkdown(md) {
       const el = document.getElementById("sg-content");
-      el.innerHTML = marked.parse(md || "");
-      if (window.renderMathInElement) {
-        renderMathInElement(el, {
-          delimiters: [
-            { left: "$$", right: "$$", display: true },
-            { left: "$",  right: "$",  display: false },
-            { left: "\\(", right: "\\)", display: false },
-            { left: "\\[", right: "\\]", display: true },
-          ],
-          throwOnError: false,
-        });
+      if (!window.katex) {
+        el.innerHTML = marked.parse(md || "");
+        return;
       }
+      // Pre-process: extract math before marked can corrupt it, replace with
+      // placeholders, render markdown, then restore KaTeX HTML.
+      const mathParts = [];
+      let src = md || "";
+
+      // Display math first ($$...$$) — must run before inline to avoid partial matches
+      src = src.replace(/\$\$([\s\S]+?)\$\$/g, (_, math) => {
+        mathParts.push(katex.renderToString(math.trim(), { displayMode: true, throwOnError: false }));
+        return `KATEX_PLACEHOLDER_${mathParts.length - 1}_END`;
+      });
+      // Inline math ($...$)
+      src = src.replace(/\$([^\$\n]+?)\$/g, (_, math) => {
+        mathParts.push(katex.renderToString(math, { displayMode: false, throwOnError: false }));
+        return `KATEX_PLACEHOLDER_${mathParts.length - 1}_END`;
+      });
+
+      let html = marked.parse(src);
+
+      mathParts.forEach((rendered, idx) => {
+        html = html.replace(`KATEX_PLACEHOLDER_${idx}_END`, rendered);
+      });
+
+      el.innerHTML = html;
     }
 
     // ---- Form submit -----------------------------------------------------

@@ -342,7 +342,7 @@ function renderQuestion() {
 
   card.innerHTML = `
     <div class="q-type-label">${escHtml(typeLabel)}</div>
-    <div class="q-text">${escHtml(q.question)}</div>
+    <div class="q-text">${renderMath(q.question)}</div>
     ${bodyHtml}
   `;
 
@@ -360,7 +360,7 @@ function buildMCBody(q) {
   const opts = Object.entries(q.options || {}).map(([letter, text]) => `
     <button class="option-btn" data-letter="${escHtml(letter)}">
       <span class="option-letter">${escHtml(letter)}</span>
-      <span>${escHtml(text)}</span>
+      <span>${renderMath(text)}</span>
     </button>`).join("");
   return `<div class="options-grid">${opts}</div>`;
 }
@@ -382,6 +382,7 @@ function attachMCListeners(q) {
 
       recordAnswer(isCorrect, isCorrect ? 1 : 0);
       showExplanation(q.explanation);
+      showSteps(q);
       showNextButton();
     });
   });
@@ -421,6 +422,7 @@ function attachTFListeners(q) {
 
       recordAnswer(isCorrect, isCorrect ? 1 : 0);
       showExplanation(q.explanation);
+      showSteps(q);
       showNextButton();
     });
   });
@@ -533,11 +535,11 @@ function showEvaluationResult(result) {
 /** Reveal the model answer + key points. */
 function showModelAnswer(q) {
   const keyPoints = (q.key_points || [])
-    .map(p => `<li>${escHtml(p)}</li>`).join("");
+    .map(p => `<li>${renderMath(p)}</li>`).join("");
 
   document.getElementById("model-answer-box").innerHTML = `
     <h4>Model Answer</h4>
-    <p>${escHtml(q.model_answer || "")}</p>
+    <p>${renderMath(q.model_answer || "")}</p>
     ${keyPoints ? `<h4 style="margin-top:0.75rem">Key Points</h4><ul>${keyPoints}</ul>` : ""}`;
   document.getElementById("model-answer-box").classList.remove("hidden");
 }
@@ -560,7 +562,19 @@ function showExplanation(text) {
   const card = document.getElementById("question-card");
   const box  = document.createElement("div");
   box.className = "explanation-box";
-  box.innerHTML  = `<div class="expl-label">Explanation</div>${escHtml(text)}`;
+  box.innerHTML  = `<div class="expl-label">Explanation</div>${renderMath(text)}`;
+  card.appendChild(box);
+}
+
+function showSteps(q) {
+  if (!q.steps || q.steps.length === 0) return;
+  const card = document.getElementById("question-card");
+  const box  = document.createElement("div");
+  box.className = "steps-box";
+  const items = q.steps.map((s, i) =>
+    `<li class="step-item"><span class="step-num">${i + 1}</span><span>${renderMath(s)}</span></li>`
+  ).join("");
+  box.innerHTML = `<div class="steps-label">Solution Steps</div><ol class="steps-list">${items}</ol>`;
   card.appendChild(box);
 }
 
@@ -620,8 +634,8 @@ function showResults() {
       if (q.type === "short_answer")                 ans = q.model_answer ?? "";
       return `
         <div class="missed-item">
-          <div class="missed-q">${escHtml(q.question)}</div>
-          <div class="missed-a">Answer: ${escHtml(ans)}</div>
+          <div class="missed-q">${renderMath(q.question)}</div>
+          <div class="missed-a">Answer: ${renderMath(ans)}</div>
         </div>`;
     }).join("");
   }
@@ -797,6 +811,24 @@ function escHtml(str) {
   return String(str)
     .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+
+function renderMath(text) {
+  if (!text) return '';
+  if (!window.katex) return escHtml(text);
+  const pattern = /\$\$([\s\S]+?)\$\$|\$([^\$\n]+?)\$/g;
+  let result = '';
+  let lastIndex = 0;
+  let match;
+  while ((match = pattern.exec(text)) !== null) {
+    result += escHtml(text.slice(lastIndex, match.index));
+    const math = match[1] ?? match[2];
+    const display = match[1] !== undefined;
+    result += katex.renderToString(math, { displayMode: display, throwOnError: false });
+    lastIndex = pattern.lastIndex;
+  }
+  result += escHtml(text.slice(lastIndex));
+  return result;
 }
 
 function truncate(str, max) {

@@ -7,6 +7,7 @@ The following study notes have been provided by the student:
 --- NOTES END ---
 
 Generate exactly <<num_questions>> questions at **<<difficulty>>** difficulty based ONLY on the content in the notes above.
+For all of the quiz questions, have them be similar to the notes but not exactly the same question. Numbers in math and science problems should vary. 
 Aim for this distribution:
   • ~<<num_mc>> multiple choice  (test specific knowledge from the notes)
   • ~<<num_tf>> true / false     (address concepts or common misconceptions found in the notes)
@@ -15,6 +16,14 @@ Aim for this distribution:
 Document your reasoning: identify the key concepts in the notes and explain your question design choices.
 
 Return ONLY a valid JSON object with NO surrounding markdown.
+
+MATH FORMATTING: Whenever a question, option, step, or explanation contains mathematical expressions — formulas, Greek letters, subscripts, superscripts, integrals, fractions, sums, matrices, symbols, etc. — write them in LaTeX enclosed in dollar signs:
+  • Inline: $E(X) = \int_{-\infty}^{\infty} x\, f_X(x)\,dx$
+  • Display: $$\sum_{i=1}^{n} i = \frac{n(n+1)}{2}$$
+Do NOT use raw Unicode math characters (∫, ∑, √, ≤, etc.) or caret notation (x^2). Use proper LaTeX (\int, \sum, \sqrt, \leq, x^2) inside $...$.
+
+IMPORTANT: Vary the correct answer across questions — do NOT always use "A". Distribute correct answers across A, B, C, and D so no single letter dominates.
+
 Schema (null for fields that don't apply to a question type):
 
 {
@@ -32,10 +41,15 @@ Schema (null for fields that don't apply to a question type):
       "type": "multiple_choice",
       "question": "...",
       "options": {"A": "...", "B": "...", "C": "...", "D": "..."},
-      "correct": "A",
+      "correct": "C",
+      "steps": [
+        "Step 1: Identify what the question is asking.",
+        "Step 2: Eliminate wrong options and explain why each is incorrect.",
+        "Step 3: The correct answer is C because ..."
+      ],
       "model_answer": null,
       "key_points": null,
-      "explanation": "..."
+      "explanation": "One-sentence summary of why C is correct."
     },
     {
       "id": 2,
@@ -43,6 +57,11 @@ Schema (null for fields that don't apply to a question type):
       "question": "...",
       "options": null,
       "correct": "True",
+      "steps": [
+        "Step 1: State the claim being evaluated.",
+        "Step 2: Apply the relevant concept or rule.",
+        "Step 3: Conclude why the statement is True/False."
+      ],
       "model_answer": null,
       "key_points": null,
       "explanation": "..."
@@ -53,6 +72,7 @@ Schema (null for fields that don't apply to a question type):
       "question": "...",
       "options": null,
       "correct": null,
+      "steps": null,
       "model_answer": "A complete model answer goes here.",
       "key_points": ["key point 1", "key point 2"],
       "explanation": "..."

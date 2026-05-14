@@ -1,78 +1,73 @@
-# Deep Down, Everyone’s a Socialist — Cheat Sheet
+# Expected Value, CDF, Change of Variable — Cheat Sheet
 
 ## TL;DR
-- **Capitalism vs. Socialism**: Capitalism rewards self-interest; socialism demands collective altruism.
-- **Michael Moore's View**: Capitalism is evil; democracy (collective production) is preferred but rarely admitted.
-- **Camping Trip Argument**: Highlights socialism’s moral appeal in small communities.
-- **Economic Feasibility**: Socialism struggles with incentives and information problems.
-- **Ideal vs. Real**: Even if socialism is morally superior, practical implementation is challenging.
+- **Expected Value ($E(X)$):** Average outcome; integral of $x$ times PDF.
+- **CDF ($F_X(x)$):** Probability $X \leq x$; integral of PDF from $-\infty$ to $x$.
+- **Change of Variables:** Transform PDFs/CDFs under variable transformation.
+- **Transforming PDFs:** Use inverse function and Jacobian for new PDF.
+- **Common Formulas:** $E(X) = \int x f_X(x) \, dx$, $F_X(x) = \int_{-\infty}^{x} f_X(t) \, dt$.
 
 ## Key Terms
 | Term | Definition |
 |------|------------|
-| <span class="key">Capitalism</span> | Economic system rewarding self-interest and innovation. |
-| <span class="key">Socialism</span> | System advocating collective ownership and egalitarian distribution. |
-| <span class="key">Gross Domestic Product (GDP)</span> | Total value of goods produced and services provided in a country. |
-| <span class="key">Bourgeois Economics</span> | Economics supporting capitalist framework, critiqued by Marxists. |
-| <span class="key">Incentive Problem</span> | Socialism's challenge of motivating individuals without personal gain. |
-| <span class="key">Information Problem</span> | Difficulty of socialist planners lacking accurate market data. |
-| <span class="key">Socialist Calculation Problem</span> | Issue of coordinating an economy without price signals. |
+| <span class="key">PDF</span> | Probability Density Function; derivative of CDF. |
+| <span class="key">CDF</span> | Cumulative Distribution Function; probability $X \leq x$. |
+| <span class="key">Expected Value</span> | Mean of a random variable's probability distribution. |
+| <span class="key">Change of Variable</span> | Technique to transform random variables. |
+| <span class="key">Transformation</span> | Function changing random variable $X$ to $Y=g(X)$. |
 
 ## Core Concepts
 
-### Capitalism's Success
-- **Self-interest** drives innovation and efficiency.
-- **Historical Performance**: Capitalist countries generally richer, e.g., U.S., Switzerland.
-- **Critics' View**: Claims capitalism is sustained by vice but delivers growth.
+### Expected Value
+- **Concept:** Expected scalar outcome of a random variable.
+- **Formula:** $E(X) = \int_{\text{range}} x f_X(x) \, dx$.
+- **Example:** If $f_X(x) = (6x+7)/200$, $E(X) = \int_3^8 x f_X(x) \, dx = 16$.
 
-### Socialist Morality
-- **Theoretical Appeal**: Asks for altruistic, community-focused behavior.
-- **Cohen’s Camping Trip**: Illustrates ideal socialism’s moral superiority in small settings.
-- **Philosophical Critiques**: Highlights moral aspirations unmet by human nature.
+### Cumulative Distribution Function (CDF)
+- **Concept:** Probability a random variable $X$ is $\leq x$.
+- **Formula:** $F_X(x) = \int_{-\infty}^x f_X(t) \, dt$.
+- **Example:** $F_X(x) = (x^2 + 1)/9$ for $-1 < x < 2$.
 
-### Practical Challenges of Socialism
-- **Incentive Problem**: Susceptible to corruption and inefficiency without personal gain.
-- **Information Problem**: Lacks market's natural price signaling for resource allocation.
-- **Market Socialism**: Proposed hybrid to combine socialism’s moral goals with capitalism’s economic efficiency.
+### Change of Variable
+- **Concept:** When $Y = g(X)$, derive PDF of $Y$ from $X$.
+- **PDF Formula:** $f_Y(y) = f_X(g^{-1}(y)) \left| \frac{d}{dy} g^{-1}(y) \right|$.
+- **Example:** For $Y = \sqrt{X+1}$ with $g^{-1}(y) = y^2 - 1$, compute $f_Y(y)$.
 
-## Common Mistakes / Gotchas
-- **Confusing Efficiency with Morality**: Efficient systems aren't always morally superior.
-- **Idealizing Theories**: Ignoring practical implementation issues.
-- **Misinterpreting Capitalism's Critics**: Know the moral vs. economic objections.
-- **Overgeneralization**: Assuming one economic system's success in every context.
+## Formulas / Rules
+
+| Formula | Symbols | Application |
+|---------|---------|-------------|
+| $E(X) = \int x f_X(x) \, dx$ | $x$, $f_X(x)$ | Calculate expected value. |
+| $F_X(x) = \int_{-\infty}^x f_X(t) \, dt$ | $x$, $f_X(x)$ | Calculate CDF. |
+| $f_Y(y) = f_X(g^{-1}(y)) \left| \frac{d}{dy} g^{-1}(y) \right|$ | $g^{-1}(y)$, $\frac{d}{dy}$ | Change of variable for PDFs. |
 
 ## Worked Mini-Examples
 
-### Camping Trip Example
-1. **Problem**: Group on a socialist camping trip stops asserting ownership.
-2. **Action**: Resources shared freely, communal chores rotated.
-3. **Outcome**: Idealized equality and cooperation; morally superior but challenging in scale.
+1. **Finding C:**  
+   $1 = \int_3^8 \frac{6x+7}{C} \, dx \Rightarrow C = 200$
 
-### Market Calculation Example
-1. **Problem**: Allocating resources in a socialist economy.
-2. **Key Step**: Absence of price signals causes inefficiency.
-3. **Outcome**: Market prices reveal shortages/surpluses, guiding adjustments.
+2. **CDF from PDF:**  
+   $F_X(x) = \frac{x^2 + 1}{9}$ on $-1 < x < 2$
+
+3. **PDF Transformation:**  
+   For $g(x) = \sqrt{x+1}$, $g^{-1}(y) = y^2 - 1$,  
+   $f_Y(y) = f_X(y^2 - 1) \cdot \left| \frac{d}{dy}(y^2 - 1) \right|$
+
+## Common Mistakes / Gotchas
+- **Forgetting normalization** of PDFs; always check $\int f_X(x) \, dx = 1$.
+- **Incorrect Jacobian** sign; use absolute value when transforming variables.
+- **Support mismatch:** Adjust limits properly for transformed variables.
 
 ## Quick-Check Questions
-1. What is the primary moral criticism Cohen has against capitalism?
-2. How does the "camping trip" thought experiment serve Cohen's argument?
-3. What are the main practical challenges socialism faces according to economists?
-4. Why do critics argue socialism is the "wrong species" of theory?
-5. How do market prices solve the information problem faced by planners?
-6. What does Cohen mean by "socialist equality of opportunity"?
-7. How does market socialism attempt to marry both economic systems?
-8. What are the common misconceptions about market prices?
-9. Why is capitalism often seen as necessary despite moral critiques?
-10. What did Cohen find compelling about Marx’s critique of capitalism?
+1. What does $E(X)$ represent?
+2. How do you compute a CDF from a PDF?
+3. What is the role of the Jacobian in change of variables?
+4. What condition must a PDF satisfy?
+5. How does $F_X(x)$ relate to probabilities?
 
 ## Answers
-1. Capitalism is inherently repugnant due to reliance on self-interest.
-2. Illustrates intuitive preference for socialist cooperation in ideal conditions.
-3. Incentive and information problems.
-4. Human nature is too flawed for socialism's demands.
-5. They convey scarcity and demand effectively.
-6. Eliminates advantages from unearned circumstances.
-7. By combining market efficiency with social distributive ideals.
-8. Perceived as arbitrary but are driven by supply and demand.
-9. It pragmatically manages human self-interest leading to efficiency.
-10. The moral critique resonates more than economic predictions.
+1. The mean or expected outcome of a random variable.
+2. Integrate the PDF from $-\infty$ to $x$.
+3. It adjusts for scaling during variable transformation.
+4. It must integrate to 1 over its range.
+5. $F_X(x) = P(X \leq x)$.
