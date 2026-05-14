@@ -22,6 +22,13 @@ handwritten-vision pipeline), Flask, and vanilla JS.
 
 ## Setup
 
+Make sure to get both keys and place them in your .env before running:
+  OPENAI_API_KEY=
+  
+  TAVILY_API_KEY=
+    
+    https://docs.tavily.com/documentation/enterprise/generate-keys (Link to API key for Tavily)
+
 ### 1. Install Tesseract (system dependency for OCR)
 
 `pytesseract` is a thin wrapper over the Tesseract binary, which Python
