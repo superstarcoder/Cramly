@@ -1,96 +1,81 @@
-# Statistics and Probability 2 — Cheat Sheet
+# Statistics and Probability — Cheat Sheet
 
 ## TL;DR
-- **Probability Density Function (PDF):** Describes continuous random variables' distributions.
-- **Cumulative Distribution Function (CDF):** $F_X(x) = P(X \leq x)$; integrates the PDF from $-\infty$ to $x$.
-- **Expected Value (EV):** Average outcome expected from a random variable; calculated via $\int xf(x) \, dx$.
-- **Transformations:** Finding PDFs and CDFs for new variables $Y = g(X)$ using change of variables.
-- **Joint Distributions:** Describe multiple random variables; marginalize for singular distributions.
+- **PDF and CDF**: Learn the probability density function (PDF) for continuous variables and how to find the cumulative distribution function (CDF).
+- **Expected Value**: Calculate expectation using $\int x \cdot f(x) \, dx$.
+- **Variable Transformations**: Understand how to transform random variables and find new distributions.
+- **Joint Distributions**: Analyze joint PDFs and calculate marginal distributions.
+- **Common Calculations**: Expectation, variance, conditional probability, and probability transformations.
 
 ## Key Terms
 
-| Term | Definition |
-|---|---|
-| <span class="key">PDF</span> | Describes the probability of a continuous random variable at a specific point. |
-| <span class="key">CDF</span> | Probability that a random variable takes on a value less than or equal to a specific value. |
-| <span class="key">Expected Value</span> | Average of all possible values weighted by their probabilities. |
-| <span class="key">Transformation</span> | A method to find the distribution of a function of a random variable. |
-| <span class="key">Joint Distribution</span> | Probability distribution for multiple random variables simultaneously. |
+| Term                                | Definition                                                                 |
+|-------------------------------------|----------------------------------------------------------------------------|
+| <span class="key">PDF</span>        | Probability density function; describes the likelihood for a continuous random variable to take on a specific value. |
+| <span class="key">CDF</span>        | Cumulative distribution function; the probability that a random variable is less than or equal to a certain value. |
+| <span class="key">Expected Value</span>| Average value of a random variable, symbolized by $E(X)$. |
+| <span class="key">Variance</span>   | Measure of the dispersion of a set of values; computed as $Var(X) = E(X^2) - (E(X))^2$. |
+| <span class="key">Transformation</span> | The process of changing a random variable into another using a function. |
+| <span class="key">Joint PDF</span>  | Probability distribution for two random variables, $f(x,y)$. |
+| <span class="key">Marginal PDF</span>| Distribution of one variable irrespective of the other variable in a joint distribution. |
 
 ## Core Concepts
 
 ### Probability Density Function (PDF)
-- **Concept:** Function $f_X(x)$ where $P(a \leq X \leq b) = \int_a^b f_X(x) \, dx$.
-- **Normalization:** $\int_{-\infty}^\infty f_X(x) \, dx = 1$.
-- **Example:** $f_X(x) = \frac{6x+7}{C}, \, 3 \leq x \leq 8$; Find $C$ such that $\int_3^8 f_X(x) \, dx = 1$.
+- **Definition**: Describes the likelihood of a random variable to take a particular value. Integral over its support equals 1.
+- **Example**: $f_X(x) = \frac{6x + 7}{200}, 3 \leq x \leq 8$.
 
 ### Cumulative Distribution Function (CDF)
-- **Concept:** $F_X(x) = \int_{-\infty}^x f_X(t) \, dt$.
-- **Property:** $F_X$ is non-decreasing and right-continuous.
-- **Example:** Use CDF to find $P(Y \leq y)$ for transformation $Y = \sqrt{X+1}$ using $F_X$.
+- **Definition**: CDF gives the probability that a random variable is less than or equal to a certain value.
+- **Relationship**: $F_X(x) = P(X \leq x) = \int_{-\infty}^{x} f_X(t) \, dt$.
+- **Example**: For $Y = g(X)$, $F_Y(y) = F_X(g^{-1}(y))$.
 
-### Expected Value & Variance
-- **Expected Value:** $E(X) = \int_3^8 x \frac{6x+7}{200} \, dx = 16$.
-- **Variance:** $Var(X) = E(X^2) - (E(X))^2$.
-- **Example:** $E(X^2)= \int_{-1}^{2} x^2 \frac{x^2+1}{9} \, dx = \frac{11}{5}$; $Var(X) = \frac{61}{90}$.
+### Expected Value
+- **Definition**: The mean or average of all possible values, weighted by their probabilities.
+- **Formula**: $E(X) = \int x \cdot f_X(x) \, dx$.
 
-### Probability Distribution of Transformed Variables
-- **Concept:** $Y = g(X)$ maps $X$ to $Y$. Find $f_Y(y)$ using change of variables.
-- **Steps:** 
-  - Find inverse: $g^{-1}(y)$.
-  - Calculate $\frac{d}{dy}[g^{-1}(y)]$.
-  - Transform PDF: $f_Y(y) = f_X(g^{-1}(y)) \left| \frac{d}{dy}[g^{-1}(y)] \right|$.
+### Transformations of Random Variables
+- **Process**: If $Y = g(X)$, find $f_Y(y) = f_X(g^{-1}(y)) \cdot \left| \frac{d}{dy} [g^{-1}(y)] \right|$.
+- **Example**: $g(x) = \sqrt{x+1}, g^{-1}(y) = y^2 - 1$.
 
-### Joint Probability Distribution
-- **Concept:** $f(x, y)$ for two variables $X, Y$.
-- **Marginal Distributions:**
-  - $f_X(x) = \int f(x, y) \, dy$
-  - $f_Y(y) = \int f(x, y) \, dx$
-- **Example:** $f(x,y) = \frac{3x + 2y}{C}$; find $C$ & boundaries.
+### Joint Probability Density
+- **Definition**: The probability law for two continuous random variables.
+- **Formula**: $f(x,y) = \frac{3x + 2y}{C}$ with given constraints.
+- **Marginal Distributions**: Integrate over one variable, $f_X(x) = \int f(x,y) \, dy$.
 
 ## Formulas / Rules
 
-| Formula | Symbols | Application |
-|---|---|---|
-| $f_X(x) = \text{given function}$ | $f_X(x), x \in [a, b]$ | Determine $C$ for PDFs. |
-| $F_X(x) = P(X \leq x)$ | $F_X(x)$ | Accumulated probability at $x$. |
-| $E(X)$ | $E(X) = \int x f_X(x) \, dx$ | Calculate expected outcome. |
-| $Var(X)$ | $E(X^2) - (E(X))^2$ | Measure spread of $X$. |
-| $f_Y(y)$ | $f_Y(y) = f_X(g^{-1}(y)) \left| \frac{d}{dy} [g^{-1}(y)] \right|$ | Derive $f_Y(y)$ from $g(X)$. |
+| Formula                              | Symbols                        | Application                                     |
+|--------------------------------------|--------------------------------|-------------------------------------------------|
+| $1 = \int f_X(x) \, dx$              | $f_X(x)$: PDF                  | Ensures PDF is valid                             |
+| $E(X) = \int x \cdot f_X(x) \, dx$   | $E(X)$: expected value         | Calculate mean of continuous variable            |
+| $Var(X)=E(X^2) - (E(X))^2$           | Variance $Var(X)$              | Measure of spread                               |
+| $F_X(x) = \int_{-\infty}^{x} f_X(t) \, dt$ | $F_X(x)$: CDF                | Cumulative probability                         |
 
 ## Worked Mini-Examples
 
-1. **Normalization of PDF:**
-   - Given $f_X(x) = \frac{6x+7}{C}$, solve $\int_3^8 f_X(x) \, dx = 1 \Rightarrow C = 200$.
-   
-2. **Finding CDF:**
-   - $F_X(x) = \int_3^x \frac{6t+7}{200} \, dt$.
-
-3. **Transformation with $Y = g(X)$:**
-   - $f_Y(y) = f_X(y^2-1) \cdot 2y$ if $Y = \sqrt{X+1}$.
-
-4. **Joint PDF:**
-   - $f(x,y) = \frac{3x+2y}{240}$ with constraints such as $x + 2y \leq 10$.
+- **Find $C$ for PDF**: $1 = \int_3^8 \frac{6x+7}{C} \, dx \rightarrow C = 200$.
+- **Transform $Y = \sqrt{x+1}$**: $f_Y(y) = f_X(g^{-1}(y)) \cdot \left|\frac{d}{dy}(y^2-1)\right|$.
+- **Expected Value Example**: $E(X) = \int_3^8 x \frac{6x+7}{200} \, dx = 16$.
 
 ## Common Mistakes / Gotchas
 
-- **Ignore Normalization:** Always check if the integral of PDF equals 1.
-- **Miss Limits in Integration:** Carefully define integration bounds for CDFs and EVs.
-- **Overlook Transformations:** Apply correct derivatives when changing variables.
-- **Confuse Marginals:** Marginal distributions require integration over unused variables' domain.
+- **Ignoring Validity of PDFs**: Ensure the integral of the PDF over its support equals 1.
+- **Misapplying Transformations**: Always consider the domain for transformed variables.
+- **Confusing Marginalization**: Remember to integrate out other variables for marginal PDFs.
 
 ## Quick-Check Questions
 
-1. What ensures a function is a valid PDF?
-2. How do you compute $E(X)$ given $f_X(x)$?
-3. What is the relationship between CDF and PDF?
-4. How do you find $f_Y(y)$ for $Y = g(X)$?
-5. Describe a joint probability distribution's support.
+1. What does the integral of a PDF over its entire support equal?
+2. How do you find the CDF from a PDF?
+3. What is the expected value of a random variable indicative of?
+4. How is the variance of a random variable calculated?
+5. What is the first step in transforming a random variable?
 
 ## Answers
 
-1. The integral of the PDF over its entire range must equal 1.
-2. By $\int x f_X(x) \, dx$ over the support of $X$.
-3. PDF is the derivative of CDF with respect to $x$.
-4. Use the method: $f_Y(y) = f_X(g^{-1}(y)) \left| \frac{d}{dy}[g^{-1}(y)] \right|$.
-5. The set where the joint PDF $f(x, y) > 0$.
+1. **1**; the integral of a PDF over its entire support must equal 1.
+2. **CDF**: $F_X(x) = \int_{-\infty}^{x} f_X(t) \, dt$.
+3. **Mean** of the possible values, weighted by probabilities.
+4. **Variance**: $Var(X) = E(X^2) - (E(X))^2$.
+5. **Determine** the form of $Y = g(X)$ and compute $g^{-1}(y)$.

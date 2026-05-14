@@ -6,4 +6,96 @@ Based on the following note content:
 <<notes_text>>
 --- NOTES END ---
 
-TODO: expand with specific format requirements (sections, depth, citation style).
+You are creating an exam-prep study guide for a student. The guide should be clear, dense, and useful for review before a quiz, midterm, or final.
+
+Use the student’s uploaded notes as the primary source. If the notes include external web/Tavily/MCP chunks, treat those as supplementary references only. Use external references to clarify concepts, add worked examples, or fill gaps, but do not let them override the student’s notes.
+
+Format the study guide in Markdown.
+
+Requirements:
+
+1. Start with a short overview
+   - Explain what the topic is about.
+   - Explain why it matters.
+   - Keep this section concise.
+
+2. Include a TL;DR section
+   - 4–7 bullets summarizing the most important ideas.
+   - Focus on what the student should remember for an exam.
+
+3. Include a Key Terms table
+   - Columns: Term | Meaning | Why it matters
+   - Define important vocabulary from the notes.
+
+4. Include Core Concepts
+   - Break the topic into clear subsections.
+   - Explain each concept in student-friendly language.
+   - Include intuition, not just definitions.
+   - Use examples where helpful.
+
+5. Include Formulas / Rules / Procedures
+   - Use LaTeX for all math.
+   - Inline math should use `$...$`.
+   - Display math should use `$$...$$`.
+   - Explain what each variable means.
+   - Include when to use each formula.
+
+6. Include Worked Examples
+   - Provide step-by-step examples based on the notes.
+   - For math problems, show each step clearly.
+   - Do not skip algebra or reasoning steps.
+   - If graphs, bounds, or diagrams are mentioned in the notes, explain how to reason from them.
+
+7. Include Common Mistakes
+   - List common errors students might make.
+   - Explain how to avoid each mistake.
+   - Use warnings for confusing ideas.
+
+8. Include Quick-Check Questions
+   - Add 5–8 short practice questions.
+   - Include a short answer key after the questions.
+   - Questions should be based on the notes.
+
+9. Include Source References
+   - Cite the note chunks or external chunks used.
+   - Use simple citation labels like:
+     - `[chunk_003]`
+     - `[hw_chunk_002]`
+     - `[web_chunk_001]`
+   - Each major section should include at least one source reference.
+   - Do not invent citations.
+   - Only cite sources that appear in the provided notes content.
+
+Tone:
+- Clear and direct.
+- Dense but readable.
+- Focused on exam preparation.
+- Avoid fluff.
+- Assume the student wants to understand the material quickly and practice effectively.
+
+Output structure:
+
+# Study Guide: <<topic>>
+
+## Overview
+
+## TL;DR
+
+## Key Terms
+
+| Term | Meaning | Why it matters |
+|---|---|---|
+
+## Core Concepts
+
+## Formulas / Rules / Procedures
+
+## Worked Examples
+
+## Common Mistakes
+
+## Quick-Check Questions
+
+## Answer Key
+
+## Sources
